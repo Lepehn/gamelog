@@ -99,6 +99,7 @@
         <span class="btn-report" id="importBtn">Import</span>
         <span class="btn-report" id="openAddGame">New Game</span>
         <input type="file" id="importJSON" accept=".json" style="display:none;">
+        <input type="text" id="gameSearch" placeholder="Search games..." style="margin-bottom:10px; padding:6px; width:300px; border-radius:6px; border:1px solid #222; background:#1b1b1b; color:white;">
       </div>
       <div class="scrollable-list-large">
         <table id="gamesTable">
@@ -275,6 +276,27 @@ function updateUI() {
       }
     });
   });
+  
+  const searchInput = document.getElementById('gameSearch');
+
+searchInput.addEventListener('input', () => {
+  const query = searchInput.value.toLowerCase();
+  const tbody = document.querySelector('#gamesTable tbody');
+
+  Array.from(tbody.querySelectorAll('tr')).forEach(row => {
+    const title = row.cells[0].textContent.toLowerCase();
+    const platform = row.cells[1].textContent.toLowerCase();
+    const status = row.cells[2].querySelector('select').value.toLowerCase();
+    const month = row.cells[3].querySelector('select').value.toLowerCase();
+    const year = row.cells[4].querySelector('select').value.toLowerCase();
+
+    if(title.includes(query) || platform.includes(query) || status.includes(query) || month.includes(query) || year.includes(query)) {
+      row.style.display = '';
+    } else {
+      row.style.display = 'none';
+    }
+  });
+});
 
   // completion bar
   const percent = totalGames ? (completed/totalGames)*100 : 0;
