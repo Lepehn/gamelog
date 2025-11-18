@@ -355,13 +355,57 @@ const profileNameEl = document.querySelector('.navbar .profile span');
 const profileAvatarEl = document.querySelector('.navbar .profile div');
 const welcomeNameEl = document.getElementById('welcomeName');
 const savedProfile = JSON.parse(localStorage.getItem('profileData'));
-if(savedProfile){
+if (savedProfile) {
   profileNameEl.textContent = savedProfile.name || profileNameEl.textContent;
   profileAvatarEl.style.backgroundImage = savedProfile.avatar || profileAvatarEl.style.backgroundImage;
   welcomeNameEl.textContent = savedProfile.name || welcomeNameEl.textContent;
   const preview = document.getElementById('profilePreview');
-  if(preview) preview.style.backgroundImage = savedProfile.avatar || preview.style.backgroundImage;
+  if (preview) preview.style.backgroundImage = savedProfile.avatar || preview.style.backgroundImage;
 }
+
+/* ---------- Account Modal Logic ---------- */
+const accountModal = document.getElementById('accountModal');
+const profileNameInput = document.getElementById('profileNameInput');
+const profileImageInput = document.getElementById('profileImageInput');
+const profilePreview = document.getElementById('profilePreview');
+const saveProfileBtn = document.getElementById('saveProfile');
+const closeAccountModal = document.getElementById('closeAccountModal');
+
+// Open account modal
+document.querySelector('.navbar .menu a[href="#"]:last-child').addEventListener('click', () => {
+  profileNameInput.value = profileNameEl.textContent;
+  accountModal.style.display = 'flex';
+});
+
+// Preview new image
+profileImageInput.addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    profilePreview.style.backgroundImage = `url('${ev.target.result}')`;
+  };
+  reader.readAsDataURL(file);
+});
+
+// Save profile changes
+saveProfileBtn.addEventListener('click', () => {
+  const newName = profileNameInput.value.trim() || profileNameEl.textContent;
+  const newAvatar = profilePreview.style.backgroundImage || profileAvatarEl.style.backgroundImage;
+
+  profileNameEl.textContent = newName;
+  profileAvatarEl.style.backgroundImage = newAvatar;
+  welcomeNameEl.textContent = newName;
+
+  localStorage.setItem('profileData', JSON.stringify({ name: newName, avatar: newAvatar }));
+  accountModal.style.display = 'none';
+});
+
+// Close modal
+closeAccountModal.addEventListener('click', () => accountModal.style.display = 'none');
+accountModal.addEventListener('click', e => {
+  if (e.target === accountModal) accountModal.style.display = 'none';
+});
 
 /* ---------- add game modal ---------- */
 const modal = document.getElementById('addGameModal');
