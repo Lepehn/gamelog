@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Game Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      background: #141414;
+      font-family: Arial, sans-serif;
+      color: #fff;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      border-bottom: 1px solid #222;
+    }
+
+    .navbar .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .navbar .menu {
+      display: flex;
+      gap: 30px;
+    }
+
+    .navbar .menu a {
+      color: #aaa;
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+
+    .navbar .menu a.active {
+      color: #fff;
+    }
+
+    .navbar .profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .container {
+      padding: 40px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 25px;
+      margin-top: 30px;
+    }
+
+    .card {
+      background: #1E1E1E;
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid #222;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .card-header h3 {
+      margin: 0;
+    }
+
+    .btn-report {
+      background: #222;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+    }
+
+    .transactions {
+      grid-column: span 2;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    table td {
+      padding: 12px 0;
+      border-bottom: 1px solid #222;
+      color: #ddd;
+      font-size: 0.9rem;
+    }
+
+    .saving-goal {
+      font-size: 1.8rem;
+      margin: 15px 0;
+    }
+
+    .progress-bar {
+      background: #333;
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress-bar-fill {
+      background: #4caf50;
+      height: 100%;
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+
+    ul { padding-left: 20px; }
+    ul li { margin-bottom: 8px; color: #ccc; }
+
+    /* Modal Styles */
+    #addGameModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+    }
+    #addGameModal .modal-content {
+      background: #222;
+      padding: 20px;
+      border-radius: 10px;
+      width: 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    #addGameModal input, #addGameModal select, #addGameModal button {
+      padding: 8px;
+      border-radius: 6px;
+      border: none;
+      font-size: 0.9rem;
+    }
+    #addGameModal button {
+      cursor: pointer;
+      background: #4caf50;
+      color: #fff;
+    }
+    #addGameModal #closeModal {
+      background: #555;
+    }
+    
+    /* ===============================
+       Scrollable List
+    =============================== */
+    .scrollable-list {
+      margin-top: 12px;
+      max-height: 240px;
+      overflow-y: auto;
+      padding-right: 8px;
+      scrollbar-color: #383838 #1a1a1a;
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="logo">.games</div>
+    <div class="menu">
+      <a class="active" href="#">Dashboard</a>
+      <a href="#">Platforms</a>
+      <a href="#">Wishlist</a>
+      <a href="#">Stats</a>
+      <a href="#">Settings</a>
+      <a href="#">Account</a>
+    </div>
+    <div class="profile">
+      <span>Lepehn</span>
+      <div style="width:32px;height:32px;background:#555;border-radius:50%"></div>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>Dashboard</h1>
+    <p>Hi Lepehn, here are your gaming stats</p>
+
+    <div class="grid">
+
+      <!-- Recently Played -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Recently Played Games</h3>
+        </div>
+        <div class="scrollable-list" id="recentlyPlayed"></div>
+      </div>
+
+      <!-- Games In Progress -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Games In Progress</h3>
+        </div>
+        <div class="scrollable-list" id="inProgress"></div>
+      </div>
+
+      <!-- Summary -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Summary</h3>
+        </div>
+        <ul id="summary"></ul>
+      </div>
+
+      <!-- Games list -->
+      <div class="card transactions">
+        <div class="card-header">
+          <h3>Games</h3>
+          <input type="file" id="importJSON" accept=".json" style="margin-bottom:20px;">
+          <span class="btn-report" id="openAddGame">New Game</span>
+        </div>
+        <div class="scrollable-list"> <table id="gamesTable"></table></div>
+      </div>
+
+      <!-- Completion Goal -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Completion Goal</h3>
+        </div>
+        <div class="saving-goal" id="completionText"></div>
+        <div class="progress-bar">
+          <div class="progress-bar-fill" id="completionBar"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="addGameModal">
+    <div class="modal-content">
+      <h3>Add New Game</h3>
+      <input type="text" id="modalGameName" placeholder="Game Name" />
+      <select id="modalGameStatus">
+        <option value="NotStarted">Not Started</option>
+        <option value="InProgress">In Progress</option>
+        <option value="Completed">Completed</option>
+      </select>
+      <button id="confirmAddGame">Add Game</button>
+      <button id="closeModal">Cancel</button>
+    </div>
+  </div>
+
+<script>
+const gameData = [];
+
+function updateUI() {
+  const gameTable = document.getElementById('gamesTable');
+  const recentList = document.getElementById('recentlyPlayed');
+  const inProgressList = document.getElementById('inProgress');
+  const summaryBox = document.getElementById('summary');
+  const completionText = document.getElementById('completionText');
+  const completionBar = document.getElementById('completionBar');
+
+  gameTable.innerHTML = '';
+  recentList.innerHTML = '';
+  inProgressList.innerHTML = '';
+
+  let completed = 0;
+
+  gameData.forEach(g => {
+    const row = `<tr><td>${g.name}</td><td>${g.status}</td></tr>`;
+    gameTable.innerHTML += row;
+
+    if (g.status === 'Completed') completed++;
+    if (g.status === 'Completed') recentList.innerHTML += `<li>${g.name}</li>`;
+    if (g.status === 'InProgress') inProgressList.innerHTML += `<li>${g.name}</li>`;
+  });
+
+  const percent = gameData.length ? (completed / gameData.length) * 100 : 0;
+  completionBar.style.width = percent + '%';
+  completionText.textContent = `${completed} / ${gameData.length} Completed`;
+
+  summaryBox.innerHTML = `
+    <li>Total Games: ${gameData.length}</li>
+    <li>Completed: ${completed}</li>
+    <li>In Progress: ${gameData.filter(g => g.status === 'InProgress').length}</li>
+    <li>Not Started: ${gameData.filter(g => g.status === 'NotStarted').length}</li>
+  `;
+}
+
+// Modal functionality
+const modal = document.getElementById("addGameModal");
+const openBtn = document.getElementById("openAddGame");
+const closeBtn = document.getElementById("closeModal");
+const confirmAdd = document.getElementById("confirmAddGame");
+
+openBtn.onclick = () => modal.style.display = "flex";
+closeBtn.onclick = () => modal.style.display = "none";
+modal.onclick = e => { if (e.target === modal) modal.style.display = "none"; };
+
+confirmAdd.onclick = () => {
+  const name = document.getElementById("modalGameName").value.trim();
+  const status = document.getElementById("modalGameStatus").value;
+  if (!name) return;
+  gameData.push({ name, status, added: Date.now() });
+  document.getElementById("modalGameName").value = "";
+  modal.style.display = "none";
+  updateUI();
+};
+
+document.getElementById('importJSON').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    try {
+      const data = JSON.parse(event.target.result);
+
+      // Iterate over all supported platforms
+      ['epic', 'nintendo', 'playstation', 'steam', 'xbox'].forEach(platform => {
+        if (Array.isArray(data[platform])) {
+          data[platform].forEach(game => {
+            // Ensure status exists
+            const status = game.status || 'NotStarted';
+            gameData.push({
+              name: game.title,
+              status: status,
+              year: game.year || '',
+              platform: platform
+            });
+          });
+        }
+      });
+
+      updateUI();
+    } catch (err) {
+      alert('Invalid JSON file');
+      console.error(err);
+    }
+  };
+  reader.readAsText(file);
+});
+
+updateUI();
+</script>
+</body>
+</html>
