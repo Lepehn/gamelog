@@ -1,51 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Game Dashboard</title>
 <style>
-body { margin:0; background:#141414; font-family:Arial,sans-serif; color:#fff; }
-.navbar { display:flex; justify-content:space-between; align-items:center; padding:20px 40px; border-bottom:1px solid #222; }
-.navbar .logo { font-size:1.5rem; font-weight:bold; }
-.navbar .menu { display:flex; gap:30px; }
-.navbar .menu a { color:#aaa; text-decoration:none; font-size:0.95rem; cursor:pointer; }
-.navbar .menu a.active { color:#fff; }
-.navbar .profile { display:flex; align-items:center; gap:10px; }
-.container { max-width:1920px; width:100%; margin:60px auto 0; }
-.grid { display:grid; grid-template-columns:repeat(3,1fr); gap:25px; margin-top:30px; }
-.card { background:#1E1E1E; padding:20px; border-radius:12px; border:1px solid #222; box-shadow:0 3px 10px rgba(0,0,0,0.06); }
-.card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
-.card-header h3 { margin:0; }
-.btn-report { background:#222; padding:6px 12px; border-radius:6px; font-size:0.8rem; cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,0.06); color:#fff; }
-.btn-report:hover { background-color: #383838; color: white; }
+  body { margin:0; background:#141414; font-family:Arial,sans-serif; color:#fff; }
+  .navbar { display:flex; justify-content:space-between; align-items:center; padding:20px 40px; border-bottom:1px solid #222; }
+  .navbar .logo { font-size:1.5rem; font-weight:bold; }
+  .navbar .menu { display:flex; gap:30px; }
+  .navbar .menu a { color:#aaa; text-decoration:none; font-size:0.95rem; cursor:pointer; }
+  .navbar .menu a.active { color:#fff; }
+  .navbar .profile { display:flex; align-items:center; gap:10px; }
+  .container { max-width:1920px; width:100%; margin:60px auto 0; padding:0 20px; }
+  .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:25px; margin-top:30px; }
+  .card { background:#1E1E1E; padding:20px; border-radius:12px; border:1px solid #222; box-shadow:0 3px 10px rgba(0,0,0,0.06); }
+  .card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; gap:10px; }
+  .card-header h3 { margin:0; }
+  .btn-report { background:#222; padding:6px 12px; border-radius:6px; font-size:0.8rem; cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,0.06); color:#fff; display:inline-flex; align-items:center; gap:8px; }
+  .btn-report:hover { background-color:#383838; color:#fff; }
+  .transactions { grid-column: span 2; }
+  table { width:100%; border-collapse:collapse; }
+  table td, table th { padding:12px 6px; border-bottom:1px solid #222; font-size:0.9rem; vertical-align:middle; }
+  table th { text-align:left; color:#aaa; }
+  .saving-goal { font-size:1.2rem; margin:15px 0; }
+  .progress-bar { background:#333; width:100%; height:8px; border-radius:4px; overflow:hidden; margin-top:10px; }
+  .progress-bar-fill { background:#4caf50; height:100%; width:0%; transition: width 0.4s ease; }
+  ul { padding-left:20px; }
+  ul li { margin-bottom:8px; color:#ccc; }
+  /* Modal */
+  .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:40; }
+  .modal-content { background:#222; padding:20px; border-radius:10px; width:320px; max-width:95%; display:flex; flex-direction:column; gap:10px; }
+  .modal-content input, .modal-content select, .modal-content button { padding:8px; border-radius:6px; border:none; font-size:0.9rem; background:#111; color:#fff; }
+  .modal-content button { cursor:pointer; }
+  #closeModal, #closeAccountModal { background:#555; }
+  #confirmAddGame { background:#4caf50; color:#fff; }
+  /* Scrollable lists */
+  .scrollable-list-small { margin-top:12px; max-height:160px; overflow-y:auto; padding-right:8px; scrollbar-color:#383838 #1a1a1a; }
+  .scrollable-list-large { margin-top:12px; max-height:400px; overflow-y:auto; padding-right:8px; scrollbar-color:#383838 #1a1a1a; }
+  /* status and date selects */
+  .statusSelect, .monthSelect, .yearSelect { padding:6px 12px; border-radius:6px; border:1px solid #222; font-size:0.8rem; background:#111; color:#fff; }
+  .statusNotStarted { background-color:#616161; color:#fff; }
+  .statusInProgress { background-color:#1177a3; color:#fff; }
+  .statusCompleted { background-color:#278041; color:#fff; }
+  .statusOnHold { background-color:#a62327; color:#fff; }
+  /* delete span styled like btn-report and center svg */
 .deleteBtn svg { background:#222; padding:6px 12px; border-radius:6px; font-size:0.8rem; cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,0.06); color:#fff; }
 .deleteBtn svg:hover { background-color: #383838; color: white; }
-.transactions { grid-column: span 2; }
-table { width:100%; border-collapse:collapse; }
-table td, table th { padding:12px 6px; border-bottom:1px solid #222; font-size:0.9rem; }
-table th { text-align:left; color:#aaa; }
-.saving-goal { font-size:1.8rem; margin:15px 0; }
-.progress-bar { background:#333; width:100%; height:8px; border-radius:4px; overflow:hidden; margin-top:10px; }
-.progress-bar-fill { background:#4caf50; height:100%; width:0%; transition: width 0.4s ease; }
-ul { padding-left:20px; }
-ul li { margin-bottom:8px; color:#ccc; }
-/* Modal Styles */
-.modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; }
-.modal-content { background:#222; padding:20px; border-radius:10px; width:300px; display:flex; flex-direction:column; gap:10px; }
-.modal-content input, .modal-content select, .modal-content button { padding:8px; border-radius:6px; border:none; font-size:0.9rem; }
-.modal-content button { cursor:pointer; }
-#closeModal, #closeAccountModal { background:#555; }
-#confirmAddGame { background:#4caf50; color:#fff; }
-/* Scrollable lists */
-.scrollable-list-small { margin-top:12px; max-height:160px; overflow-y:auto; padding-right:8px; scrollbar-color:#383838 #1a1a1a; }
-.scrollable-list-large { margin-top:12px; max-height:400px; overflow-y:auto; padding-right:8px; scrollbar-color:#383838 #1a1a1a; }
-/* Statuses */
-.statusSelect { padding: 4px 8px; border-radius: 6px; border: 1px solid #222; font-size: 0.9rem; cursor: pointer; color: #fff; background: #222; }
-.statusNotStarted { background-color: #616161; }  /* gray */
-.statusInProgress { background-color: #1177a3; } /* turqoise */
-.statusCompleted { background-color: #278041; } /* green */
-.statusOnHold {background-color: #a62327;} /* red */
+  /* small responsive tweaks */
+  @media (max-width:900px){
+    .grid { grid-template-columns:1fr; }
+    .transactions { grid-column: auto; }
+  }
 </style>
 </head>
 <body>
@@ -61,8 +67,8 @@ ul li { margin-bottom:8px; color:#ccc; }
     <a href="#">Account</a>
   </div>
   <div class="profile">
-    <span>Lepehn</span>
-    <div style="width:32px;height:32px;background-image:url('https://avatars.fastly.steamstatic.com/509fdfc9a110f100337ea9265c5bc235db7b7bab_full.jpg');background-size:100% 100%;border-radius:50%"></div>
+    <span id="profileNameDisplay">Lepehn</span>
+    <div id="profileAvatar" style="width:32px;height:32px;background-image:url('https://avatars.fastly.steamstatic.com/509fdfc9a110f100337ea9265c5bc235db7b7bab_full.jpg');background-size:100% 100%;border-radius:50%"></div>
   </div>
 </div>
 
@@ -71,25 +77,21 @@ ul li { margin-bottom:8px; color:#ccc; }
   <p>Hi <span id="welcomeName">Lepehn</span>, here are your gaming stats</p>
 
   <div class="grid">
-    <!-- Recently Played -->
     <div class="card">
       <div class="card-header"><h3>Recently Played Games</h3></div>
       <div class="scrollable-list-small" id="recentlyPlayed"></div>
     </div>
 
-    <!-- Games In Progress -->
     <div class="card">
       <div class="card-header"><h3>Games In Progress</h3></div>
       <div class="scrollable-list-small" id="inProgress"></div>
     </div>
 
-    <!-- Summary -->
     <div class="card">
       <div class="card-header"><h3>Summary</h3></div>
       <ul id="summary"></ul>
     </div>
 
-    <!-- Games list -->
     <div class="card transactions">
       <div class="card-header">
         <h3>Games</h3>
@@ -105,6 +107,8 @@ ul li { margin-bottom:8px; color:#ccc; }
               <th>Name</th>
               <th>Platform</th>
               <th>Status</th>
+              <th>Month</th>
+              <th>Year</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -113,7 +117,6 @@ ul li { margin-bottom:8px; color:#ccc; }
       </div>
     </div>
 
-    <!-- Completion Goal -->
     <div class="card" style="max-height:120px">
       <div class="card-header"><h3>Completion Goal</h3></div>
       <div class="saving-goal" id="completionText"></div>
@@ -124,16 +127,28 @@ ul li { margin-bottom:8px; color:#ccc; }
   </div>
 </div>
 
-<!-- Game Modal -->
+<!-- Add Game Modal -->
 <div id="addGameModal" class="modal">
   <div class="modal-content">
     <h3>Add New Game</h3>
     <input type="text" id="modalGameName" placeholder="Game Name" />
-    <select id="modalGameStatus">
+    <input type="text" id="modalGamePlatform" placeholder="Platform (steam, xbox, nintendo...)" />
+    <select id="modalGameStatus" class="statusSelect">
       <option value="NotStarted">Not Started</option>
       <option value="InProgress">In Progress</option>
+      <option value="OnHold">On Hold</option>
       <option value="Completed">Completed</option>
     </select>
+
+    <div style="display:flex; gap:8px;">
+      <select id="modalGameMonth" class="monthSelect" style="flex:1;">
+        <option value="">Month</option>
+      </select>
+      <select id="modalGameYear" class="yearSelect" style="width:120px;">
+        <option value="">Year</option>
+      </select>
+    </div>
+
     <button id="confirmAddGame">Add Game</button>
     <button id="closeModal">Cancel</button>
   </div>
@@ -154,9 +169,40 @@ ul li { margin-bottom:8px; color:#ccc; }
 </div>
 
 <script>
-const gameData = JSON.parse(localStorage.getItem('gameData')) || [];
+/* ---------- configuration ---------- */
+const MONTHS = [
+  "January","February","March","April","May","June",
+  "July","August","September","October","November","December"
+];
+const YEAR_START = 1980;
+const YEAR_END = new Date().getFullYear();
+
+/* ---------- storage ---------- */
+const gameData = JSON.parse(localStorage.getItem('gameData')) || { prefix: 'gameBacklog', epic: [], nintendo: [], playstation: [], steam: [], xbox: [] };
 function saveGames(){ localStorage.setItem('gameData', JSON.stringify(gameData)); }
 
+/* ---------- helpers ---------- */
+function escapeHtml(str){
+  return String(str || '').replace(/[&<>"]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]));
+}
+
+function makeMonthOptions(selectedMonth) {
+  let opts = `<option value="">Month</option>`;
+  MONTHS.forEach(m => {
+    opts += `<option value="${m}" ${m===selectedMonth ? 'selected' : ''}>${m}</option>`;
+  });
+  return opts;
+}
+
+function makeYearOptions(selectedYear) {
+  let opts = `<option value="">Year</option>`;
+  for (let y = YEAR_END; y >= YEAR_START; --y) {
+    opts += `<option value="${y}" ${String(y)===String(selectedYear) ? 'selected' : ''}>${y}</option>`;
+  }
+  return opts;
+}
+
+/* ---------- update UI ---------- */
 function updateUI() {
   const tbody = document.querySelector('#gamesTable tbody');
   const recentList = document.getElementById('recentlyPlayed');
@@ -168,222 +214,240 @@ function updateUI() {
   tbody.innerHTML = '';
   recentList.innerHTML = '';
   inProgressList.innerHTML = '';
+  summaryBox.innerHTML = '';
 
+  let totalGames = 0;
   let completed = 0;
+  let inProgress = 0;
+  let notStarted = 0;
+  let onHold = 0;
 
-  gameData.forEach((g, index) => {
-    tbody.innerHTML += `
-      <tr>
-        <td>${g.name}</td>
-        <td>${g.platform || '-'}</td>
-        <td>
-          <select class="statusSelect status${g.status}" data-index="${index}">
-            <option value="NotStarted" ${g.status==='NotStarted' ? 'selected' : ''}>Not Started</option>
-            <option value="InProgress" ${g.status==='InProgress' ? 'selected' : ''}>In Progress</option>
-            <option value="OnHold" ${g.status==='OnHold' ? 'selected' : ''}>On Hold</option>
-            <option value="Completed" ${g.status==='Completed' ? 'selected' : ''}>Completed</option>
-          </select>
-        </td>
+  Object.keys(gameData).forEach(platform => {
+    if (platform === 'prefix') return;
+    gameData[platform].forEach((g, index) => {
+      totalGames++;
+
+      const month = g.month || '';
+      const year = g.year || '';
+
+      tbody.innerHTML += `
+<tr>
+  <td>${escapeHtml(g.title)}</td>
+  <td>${platform}</td>
+  <td>
+    <select class="statusSelect status${g.status}" data-platform="${platform}" data-index="${index}">
+      <option value="NotStarted" ${g.status==='NotStarted'?'selected':''}>Not Started</option>
+      <option value="InProgress" ${g.status==='InProgress'?'selected':''}>In Progress</option>
+      <option value="OnHold" ${g.status==='OnHold'?'selected':''}>On Hold</option>
+      <option value="Completed" ${g.status==='Completed'?'selected':''}>Completed</option>
+    </select>
+  </td>
+  <td>
+    <select class="monthSelect" data-platform="${platform}" data-index="${index}" style="background:#222; color:#fff; border-radius:6px; padding:4px; border:1px solid #222;">
+      ${makeMonthOptions(month)}
+    </select>
+  </td>
+  <td>
+    <select class="yearSelect" data-platform="${platform}" data-index="${index}" style="background:#222; color:#fff; border-radius:6px; padding:4px; border:1px solid #222;">
+      ${makeYearOptions(year)}
+    </select>
+  </td>
         <td><span class="deleteBtn" data-index="${index}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="20" height="20" fill="currentColor">
       <path d="M80,20L60,20L60,15C60,12.239,57.761,10,55,10L45,10C42.239,10,40,12.239,40,15L40,20L20,20C17.239,20,15,22.239,15,25L15,30L85,30L85,25C85,22.239,82.761,20,80,20ZM45,20L45,15L55,15L55,20L45,20Z"/>
       <path d="M20,90L80,90L80,35L20,35L20,90ZM65,40L70,40L70,85L65,85L65,40ZM47.5,40L52.5,40L52.5,85L47.5,85L47.5,40ZM30,40L35,40L35,85L30,85L30,40Z"/>
     </svg></span></td>
       </tr>
     `;
-    if(g.status==='Completed') completed++;
-    if(g.status==='Completed') recentList.innerHTML += `<li>${g.name}</li>`;
-    if(g.status==='InProgress') inProgressList.innerHTML += `<li>${g.name}</li>`;
+
+      // count statuses
+      switch(g.status) {
+        case 'Completed':
+          completed++;
+          if(month && year) recentList.innerHTML += `<li>${escapeHtml(g.title)} — ${month} ${year}</li>`;
+          else recentList.innerHTML += `<li>${escapeHtml(g.title)}</li>`;
+          break;
+        case 'InProgress':
+          inProgress++;
+          inProgressList.innerHTML += `<li>${escapeHtml(g.title)}</li>`;
+          break;
+        case 'NotStarted': notStarted++; break;
+        case 'OnHold': onHold++; break;
+      }
+    });
   });
 
-  const percent = gameData.length ? (completed/gameData.length)*100 : 0;
-  completionBar.style.width = percent+'%';
-  completionText.textContent = `${completed} / ${gameData.length} Completed`;
+  // completion bar
+  const percent = totalGames ? (completed/totalGames)*100 : 0;
+  if(completionBar) completionBar.style.width = percent+'%';
+  if(completionText) completionText.textContent = `${completed} / ${totalGames} Completed`;
 
-  summaryBox.innerHTML = `
-    <li>Total Games: ${gameData.length}</li>
-    <li>Completed: ${completed}</li>
-    <li>In Progress: ${gameData.filter(g=>g.status==='InProgress').length}</li>
-    <li>Not Started: ${gameData.filter(g=>g.status==='NotStarted').length}</li>
-    <li>On Hold: ${gameData.filter(g=>g.status==='OnHold').length}</li>
-  `;
-
-// Delete buttons using event delegation
-document.getElementById('gamesTable').addEventListener('click', e => {
-  const btn = e.target.closest('.deleteBtn'); // works even if clicking SVG or path inside
-  if (!btn) return;
-
-  const idx = btn.dataset.index;
-  gameData.splice(idx, 1);
-  localStorage.setItem('gameData', JSON.stringify(gameData)); // persist changes
-  updateUI();
-});
+  // summary
+  if(summaryBox){
+    summaryBox.innerHTML = `
+      <li>Total Games: ${totalGames}</li>
+      <li>Completed: ${completed}</li>
+      <li>In Progress: ${inProgress}</li>
+      <li>Not Started: ${notStarted}</li>
+      <li>On Hold: ${onHold}</li>
+    `;
+  }
 }
 
+/* ---------- table change handling ---------- */
 document.getElementById('gamesTable').addEventListener('change', e => {
-  const select = e.target.closest('.statusSelect');
-  if (!select) return;
+  const sel = e.target.closest('.statusSelect, .monthSelect, .yearSelect');
+  if(!sel) return;
 
-  const idx = select.dataset.index;
-  gameData[idx].status = select.value;
+  const platform = sel.dataset.platform;
+  const idx = Number(sel.dataset.index);
+  if(isNaN(idx)) return;
 
-  localStorage.setItem('gameData', JSON.stringify(gameData)); // save
-  updateUI(); // refresh UI
+  const g = gameData[platform][idx];
+
+  if(sel.classList.contains('statusSelect')) g.status = sel.value;
+  else if(sel.classList.contains('monthSelect')) g.month = sel.value;
+  else if(sel.classList.contains('yearSelect')) g.year = sel.value;
+
+  saveGames();
+  updateUI();
 });
 
-// ======= Profile =======
+/* ---------- delete handling ---------- */
+document.getElementById('gamesTable').addEventListener('click', e => {
+  const btn = e.target.closest('.deleteBtn');
+  if(!btn) return;
+
+  const platform = btn.dataset.platform;
+  const idx = Number(btn.dataset.index);
+  if(isNaN(idx)) return;
+
+  if(!confirm(`Delete "${gameData[platform][idx].title}"?`)) return;
+
+  gameData[platform].splice(idx,1);
+  saveGames();
+  updateUI();
+});
+
+/* ---------- profile handling ---------- */
 const profileNameEl = document.querySelector('.navbar .profile span');
 const profileAvatarEl = document.querySelector('.navbar .profile div');
 const welcomeNameEl = document.getElementById('welcomeName');
 const savedProfile = JSON.parse(localStorage.getItem('profileData'));
 if(savedProfile){
-  profileNameEl.textContent = savedProfile.name;
-  profileAvatarEl.style.backgroundImage = savedProfile.avatar;
-  welcomeNameEl.textContent = savedProfile.name;
-  document.getElementById('profilePreview').style.backgroundImage = savedProfile.avatar;
+  profileNameEl.textContent = savedProfile.name || profileNameEl.textContent;
+  profileAvatarEl.style.backgroundImage = savedProfile.avatar || profileAvatarEl.style.backgroundImage;
+  welcomeNameEl.textContent = savedProfile.name || welcomeNameEl.textContent;
+  const preview = document.getElementById('profilePreview');
+  if(preview) preview.style.backgroundImage = savedProfile.avatar || preview.style.backgroundImage;
 }
 
-// ======= Account Modal =======
-const accountModal = document.getElementById('accountModal');
-const profileNameInput = document.getElementById('profileNameInput');
-const profileImageInput = document.getElementById('profileImageInput');
-const profilePreview = document.getElementById('profilePreview');
-const saveProfileBtn = document.getElementById('saveProfile');
-const closeAccountModal = document.getElementById('closeAccountModal');
+/* ---------- add game modal ---------- */
+const modal = document.getElementById('addGameModal');
+const openBtn = document.getElementById('openAddGame');
+const closeBtn = document.getElementById('closeModal');
+const confirmAdd = document.getElementById('confirmAddGame');
+const modalName = document.getElementById('modalGameName');
+const modalPlatform = document.getElementById('modalGamePlatform');
+const modalStatus = document.getElementById('modalGameStatus');
+const modalMonth = document.getElementById('modalGameMonth');
+const modalYear = document.getElementById('modalGameYear');
 
-document.querySelector('.navbar .menu a[href="#"]:last-child').addEventListener('click', ()=>{
-  profileNameInput.value = profileNameEl.textContent;
-  accountModal.style.display='flex';
+modalMonth.innerHTML = makeMonthOptions('');
+modalYear.innerHTML = makeYearOptions('');
+
+openBtn.addEventListener('click', () => {
+  modal.style.display = 'flex';
+  modalName.value = '';
+  modalPlatform.value = '';
+  modalStatus.value = 'NotStarted';
+  modalMonth.value = '';
+  modalYear.value = '';
 });
 
-profileImageInput.addEventListener('change', e=>{
+closeBtn.addEventListener('click', () => modal.style.display = 'none');
+modal.addEventListener('click', e => { if(e.target === modal) modal.style.display='none'; });
+
+confirmAdd.addEventListener('click', () => {
+  const name = modalName.value.trim();
+  const platform = modalPlatform.value.trim() || 'steam';
+  const status = modalStatus.value;
+  const month = modalMonth.value || '';
+  const year = modalYear.value || '';
+
+  if(!name) { alert('Enter a game name'); return; }
+
+  if(!gameData[platform]) gameData[platform] = [];
+  gameData[platform].push({ title: name, status, month, year });
+  saveGames();
+  modal.style.display='none';
+  updateUI();
+});
+
+/* ---------- import/export ---------- */
+const importBtn = document.getElementById('importBtn');
+const importInput = document.getElementById('importJSON');
+const exportBtn = document.getElementById('exportBtn');
+
+importBtn.addEventListener('click', () => importInput.click());
+importInput.addEventListener('change', function(e){
   const file = e.target.files[0];
   if(!file) return;
   const reader = new FileReader();
-  reader.onload = ev=>{ profilePreview.style.backgroundImage=`url('${ev.target.result}')`; }
-  reader.readAsDataURL(file);
-});
-
-saveProfileBtn.addEventListener('click', ()=>{
-  const newName = profileNameInput.value.trim();
-  const newAvatar = profilePreview.style.backgroundImage;
-  profileNameEl.textContent=newName;
-  profileAvatarEl.style.backgroundImage=newAvatar;
-  welcomeNameEl.textContent=newName;
-  localStorage.setItem('profileData', JSON.stringify({name:newName, avatar:newAvatar}));
-  accountModal.style.display='none';
-});
-
-closeAccountModal.addEventListener('click', ()=>accountModal.style.display='none');
-accountModal.addEventListener('click', e=>{ if(e.target===accountModal) accountModal.style.display='none'; });
-
-// ======= Game Modal =======
-const modal = document.getElementById("addGameModal");
-const openBtn = document.getElementById("openAddGame");
-const closeBtn = document.getElementById("closeModal");
-const confirmAdd = document.getElementById("confirmAddGame");
-
-openBtn.onclick = ()=>modal.style.display="flex";
-closeBtn.onclick = ()=>modal.style.display="none";
-modal.onclick = e=>{ if(e.target===modal) modal.style.display="none"; };
-confirmAdd.onclick = ()=>{
-  const name=document.getElementById("modalGameName").value.trim();
-  const status=document.getElementById("modalGameStatus").value;
-  if(!name) return;
-  gameData.push({name,status,added:Date.now()});
-  saveGames();
-  document.getElementById("modalGameName").value="";
-  modal.style.display="none";
-  updateUI();
-};
-
-// ======= JSON Import =======
-const importBtn = document.getElementById('importBtn');
-const importInput = document.getElementById('importJSON');
-
-importBtn.addEventListener('click', () => {
-  importInput.click(); // open file dialog
-});
-
-importInput.addEventListener('change', function(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = function(event) {
-    try {
-      const data = JSON.parse(event.target.result);
-
-      ['epic', 'nintendo', 'playstation', 'steam', 'xbox'].forEach(platform => {
-        if (Array.isArray(data[platform])) {
+  reader.onload = function(ev){
+    try{
+      const data = JSON.parse(ev.target.result);
+      ['epic','nintendo','playstation','steam','xbox'].forEach(platform => {
+        if(Array.isArray(data[platform])){
           data[platform].forEach(game => {
-            const status = game.status || 'NotStarted';
-            
-            // Check if game already exists
-            const exists = gameData.some(g => g.name === game.title && g.platform === platform);
-            if (!exists) {
-              gameData.push({
-                name: game.title,
-                status,
-                year: game.year || '',
-                platform
+            const exists = gameData[platform]?.some(g=> g.title===game.title && g.month===game.month && g.year===game.year);
+            if(!exists){
+              if(!gameData[platform]) gameData[platform] = [];
+              gameData[platform].push({
+                title: game.title,
+                status: game.status || 'NotStarted',
+                month: game.month || '',
+                year: game.year || ''
               });
             }
           });
         }
       });
-
-      localStorage.setItem('gameData', JSON.stringify(gameData)); // persist
+      saveGames();
       updateUI();
-    } catch (err) {
-      alert('Invalid JSON file');
+      alert('Import complete');
+    }catch(err){
       console.error(err);
+      alert('Invalid JSON file');
     }
   };
   reader.readAsText(file);
-
-  // Reset the input so the same file can be imported again if needed
   e.target.value = '';
 });
 
-// ======= JSON Export =======
-const exportBtn = document.getElementById('exportBtn');
-
-exportBtn.addEventListener('click', () => {
-  if (!gameData.length) {
-    alert('No games to export.');
-    return;
-  }
-
-  // Structure data by platform
-  const exportData = {
-    epic: [],
-    nintendo: [],
-    playstation: [],
-    steam: [],
-    xbox: []
-  };
-
-  gameData.forEach(g => {
-    const platform = g.platform || 'steam'; // fallback platform
-    if (exportData[platform]) {
+exportBtn.addEventListener('click', ()=>{
+  const exportData = { prefix:'gameBacklog', epic:[], nintendo:[], playstation:[], steam:[], xbox:[] };
+  ['epic','nintendo','playstation','steam','xbox'].forEach(platform=>{
+    if(gameData[platform]) gameData[platform].forEach(g=>{
       exportData[platform].push({
-        title: g.name,
+        title: g.title,
         status: g.status,
-        year: g.year || ''
+        month: g.month || '',
+        year: g.year || '',
+        rating: g.rating || '',
+        note: g.note || ''
       });
-    }
+    });
   });
-
-  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+  const blob = new Blob([JSON.stringify(exportData,null,2)],{type:'application/json'});
   const url = URL.createObjectURL(blob);
-
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'gameBacklog.json';
+  a.download='gameBacklog.json';
   a.click();
   URL.revokeObjectURL(url);
 });
 
+/* ---------- init ---------- */
 updateUI();
 </script>
 </body>
