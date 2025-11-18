@@ -48,6 +48,9 @@
 
     .container {
       padding: 40px;
+      max-width: 1200px;
+  	  width: 100%;
+      margin: 60px auto 0;
     }
 
     .grid {
@@ -163,9 +166,16 @@
     /* ===============================
        Scrollable List
     =============================== */
-    .scrollable-list {
+    .scrollable-list-small {
       margin-top: 12px;
       max-height: 240px;
+      overflow-y: auto;
+      padding-right: 8px;
+      scrollbar-color: #383838 #1a1a1a;
+    }
+    .scrollable-list-large {
+      margin-top: 12px;
+      max-height: 480px;
       overflow-y: auto;
       padding-right: 8px;
       scrollbar-color: #383838 #1a1a1a;
@@ -200,7 +210,7 @@
         <div class="card-header">
           <h3>Recently Played Games</h3>
         </div>
-        <div class="scrollable-list" id="recentlyPlayed"></div>
+        <div class="scrollable-list-small" id="recentlyPlayed"></div>
       </div>
 
       <!-- Games In Progress -->
@@ -208,7 +218,7 @@
         <div class="card-header">
           <h3>Games In Progress</h3>
         </div>
-        <div class="scrollable-list" id="inProgress"></div>
+        <div class="scrollable-list-small" id="inProgress"></div>
       </div>
 
       <!-- Summary -->
@@ -226,11 +236,11 @@
           <input type="file" id="importJSON" accept=".json" style="margin-bottom:20px;">
           <span class="btn-report" id="openAddGame">New Game</span>
         </div>
-        <div class="scrollable-list"> <table id="gamesTable"></table></div>
+        <div class="scrollable-list-large"> <table id="gamesTable"></table></div>
       </div>
 
       <!-- Completion Goal -->
-      <div class="card">
+      <div class="card" style="max-height:240px">
         <div class="card-header">
           <h3>Completion Goal</h3>
         </div>
