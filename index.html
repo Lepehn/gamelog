@@ -18,7 +18,9 @@ body { margin:0; background:#141414; font-family:Arial,sans-serif; color:#fff; }
 .card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
 .card-header h3 { margin:0; }
 .btn-report { background:#222; padding:6px 12px; border-radius:6px; font-size:0.8rem; cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,0.06); color:#fff; }
+.btn-report:hover { background-color: #383838; color: white; }
 .deleteBtn svg { background:#222; padding:6px 12px; border-radius:6px; font-size:0.8rem; cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,0.06); color:#fff; }
+.deleteBtn svg:hover { background-color: #383838; color: white; }
 .transactions { grid-column: span 2; }
 table { width:100%; border-collapse:collapse; }
 table td, table th { padding:12px 6px; border-bottom:1px solid #222; font-size:0.9rem; }
@@ -38,17 +40,8 @@ ul li { margin-bottom:8px; color:#ccc; }
 /* Scrollable lists */
 .scrollable-list-small { margin-top:12px; max-height:160px; overflow-y:auto; padding-right:8px; scrollbar-color:#383838 #1a1a1a; }
 .scrollable-list-large { margin-top:12px; max-height:400px; overflow-y:auto; padding-right:8px; scrollbar-color:#383838 #1a1a1a; }
-.statusSelect {
-  padding: 4px 8px;
-  border-radius: 6px;
-  border: 1px solid #222;
-  font-size: 0.9rem;
-  cursor: pointer;
-  color: #fff;
-  background: #222; /* default background */
-}
-
-/* Change background color dynamically using classes or JS */
+/* Statuses */
+.statusSelect { padding: 4px 8px; border-radius: 6px; border: 1px solid #222; font-size: 0.9rem; cursor: pointer; color: #fff; background: #222; }
 .statusNotStarted { background-color: #616161; }  /* gray */
 .statusInProgress { background-color: #1177a3; } /* turqoise */
 .statusCompleted { background-color: #278041; } /* green */
@@ -121,7 +114,7 @@ ul li { margin-bottom:8px; color:#ccc; }
     </div>
 
     <!-- Completion Goal -->
-    <div class="card" style="max-height:240px">
+    <div class="card" style="max-height:120px">
       <div class="card-header"><h3>Completion Goal</h3></div>
       <div class="saving-goal" id="completionText"></div>
       <div class="progress-bar">
