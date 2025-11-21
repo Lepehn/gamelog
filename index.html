@@ -14,9 +14,13 @@
   .navbar .profile { display:flex; align-items:center; gap:10px; }
   .container { max-width:1920px; width:100%; margin:60px auto 0; padding:0 20px; }
   .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:25px; margin-top:30px; }
+  .grid2 { display:grid; grid-template-columns:repeat(2,1fr); gap:25px; margin-top:30px; }
   .card { background:#1E1E1E; padding:20px; border-radius:12px; border:1px solid #222; box-shadow:0 3px 10px rgba(0,0,0,0.06); }
   .card-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; gap:10px; }
   .card-header h3 { margin:0; }
+  .chart-status { display: block; margin: 0 auto; width: 100% !important; max-height: 250px; }
+  .chart-platform { display: block; margin: 0 auto; width: 100% !important; max-height: 250px; }
+  .card canvas { width: 100% !important; max-height: 250px; }
   .btn-report { background:#222; padding:6px 12px; border-radius:6px; font-size:0.8rem; cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,0.06); color:#fff; display:inline-flex; align-items:center; gap:8px; }
   .btn-report:hover { background-color:#383838; color:#fff; }
   .transactions { grid-column: span 2; }
@@ -73,56 +77,83 @@
 </div>
 
 <div class="container">
-  <h1>Dashboard</h1>
-  <p>Hi <span id="welcomeName">Lepehn</span>, here are your gaming stats</p>
+  <!-- Dashboard content -->
+  <div id="dashboardContent">
+    <h1>Dashboard</h1>
+    <p>Hi <span id="welcomeName">Lepehn</span>, here are your games</p>
 
-  <div class="grid">
-    <div class="card">
-      <div class="card-header"><h3>Recently Played Games</h3></div>
-      <div class="scrollable-list-small" id="recentlyPlayed"></div>
-    </div>
-
-    <div class="card">
-      <div class="card-header"><h3>Games In Progress</h3></div>
-      <div class="scrollable-list-small" id="inProgress"></div>
-    </div>
-
-    <div class="card">
-      <div class="card-header"><h3>Summary</h3></div>
-      <ul id="summary"></ul>
-    </div>
-
-    <div class="card transactions">
-      <div class="card-header">
-        <h3>Games</h3>
-        <span class="btn-report" id="exportBtn">Export</span>
-        <span class="btn-report" id="importBtn">Import</span>
-        <span class="btn-report" id="openAddGame">New Game</span>
-        <input type="file" id="importJSON" accept=".json" style="display:none;">
-        <input type="text" id="gameSearch" placeholder="Search games..." style="margin-bottom:10px; padding:6px; width:300px; border-radius:6px; border:1px solid #222; background:#1b1b1b; color:white;">
+    <div class="grid">
+      <div class="card">
+        <div class="card-header"><h3>Recently Played Games</h3></div>
+        <div class="scrollable-list-small" id="recentlyPlayed"></div>
       </div>
-      <div class="scrollable-list-large">
-        <table id="gamesTable">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Platform</th>
-              <th>Status</th>
-              <th>Month</th>
-              <th>Year</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+
+      <div class="card">
+        <div class="card-header"><h3>Games In Progress</h3></div>
+        <div class="scrollable-list-small" id="inProgress"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Summary</h3></div>
+        <ul id="summary"></ul>
+      </div>
+
+      <div class="card transactions">
+        <div class="card-header">
+          <h3>Games</h3>
+          <span class="btn-report" id="exportBtn">Export</span>
+          <span class="btn-report" id="importBtn">Import</span>
+          <span class="btn-report" id="openAddGame">New Game</span>
+          <input type="file" id="importJSON" accept=".json" style="display:none;">
+          <input type="text" id="gameSearch" placeholder="Search games..." style="margin-bottom:10px; padding:6px; width:300px; border-radius:6px; border:1px solid #222; background:#1b1b1b; color:white;">
+        </div>
+        <div class="scrollable-list-large">
+          <table id="gamesTable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Platform</th>
+                <th>Status</th>
+                <th>Month</th>
+                <th>Year</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" style="max-height:120px">
+        <div class="card-header"><h3>Completion Goal</h3></div>
+        <div class="saving-goal" id="completionText"></div>
+        <div class="progress-bar">
+          <div class="progress-bar-fill" id="completionBar"></div>
+        </div>
       </div>
     </div>
+  </div>
 
-    <div class="card" style="max-height:120px">
-      <div class="card-header"><h3>Completion Goal</h3></div>
-      <div class="saving-goal" id="completionText"></div>
-      <div class="progress-bar">
-        <div class="progress-bar-fill" id="completionBar"></div>
+  <!-- Stats content -->
+  <div id="statsContent" style="display:none;">
+    <h1>Game Stats</h1>
+    <p>Hi <span id="welcomeName">Lepehn</span>, here are your gaming stats</p>
+    <div class="grid2">
+      <div class="card" style="max-height:360px">
+        <div class="card-header"><h3>Games by Status</h3></div>
+        <canvas id="statusChart" class="chart-status"></canvas>
+      </div>
+      <div class="card" style="max-height:360px">
+        <div class="card-header"><h3>Games by Platform</h3></div>
+        <canvas id="platformChart" class="chart-platform"></canvas>
+      </div>
+      <div class="card" style="max-height:360px">
+        <div class="card-header"><h3>Games by Year</h3></div>
+        <canvas id="yearChart"></canvas>
+      </div>
+      <div class="card" style="max-height:360px">
+        <div class="card-header"><h3>Games by Month</h3></div>
+        <canvas id="monthChart"></canvas>
       </div>
     </div>
   </div>
@@ -169,6 +200,7 @@
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 /* ---------- configuration ---------- */
 const MONTHS = [
@@ -201,6 +233,84 @@ function makeYearOptions(selectedYear) {
     opts += `<option value="${y}" ${String(y)===String(selectedYear) ? 'selected' : ''}>${y}</option>`;
   }
   return opts;
+}
+
+/*----------- stats ----------*/
+let statusChart, platformChart, yearChart, monthChart;
+
+function updateStats() {
+  const statusCount = { Completed:0, InProgress:0, NotStarted:0, OnHold:0 };
+  const platformCount = {};
+  const yearCount = {};
+  const monthCount = {};
+  
+  Object.keys(gameData).forEach(platform=>{
+    if(platform==='prefix') return;
+    platformCount[platform] = gameData[platform].length || 0;
+    gameData[platform].forEach(g=>{
+      statusCount[g.status] = (statusCount[g.status]||0)+1;
+      if(g.year) yearCount[g.year] = (yearCount[g.year]||0)+1;
+      if(g.month) monthCount[g.month] = (monthCount[g.month]||0)+1;
+    });
+  });
+
+  const statusLabels = Object.keys(statusCount);
+  const statusValues = Object.values(statusCount);
+
+  const platformLabels = Object.keys(platformCount);
+  const platformValues = Object.values(platformCount);
+
+  const yearLabels = Object.keys(yearCount).sort((a,b)=>b-a);
+  const yearValues = yearLabels.map(y=>yearCount[y]);
+
+    const MONTHS_FULL =["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const MONTHS_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+  const monthValues = MONTHS_SHORT.map(short => {
+    let count = 0;
+    Object.keys(gameData).forEach(platform => {
+      if(platform==='prefix') return;
+      gameData[platform].forEach(g => { if(g.month === short) count++; });
+    });
+    return count;
+  });
+  
+  const monthLabels = MONTHS_FULL; // Add this line before creating monthChart
+
+  // Destroy previous charts if they exist
+  if(statusChart) statusChart.destroy();
+  if(platformChart) platformChart.destroy();
+  if(yearChart) yearChart.destroy();
+  if(monthChart) monthChart.destroy();
+
+  const ctxStatus = document.getElementById('statusChart').getContext('2d');
+  const ctxPlatform = document.getElementById('platformChart').getContext('2d');
+  const ctxYear = document.getElementById('yearChart').getContext('2d');
+  const ctxMonth = document.getElementById('monthChart').getContext('2d');
+
+  statusChart = new Chart(ctxStatus, {
+    type:'doughnut',
+    data:{ labels:statusLabels, datasets:[{ data:statusValues, backgroundColor:['#278041','#1177a3','#616161','#a62327'] }]},
+    options:{ responsive:true, plugins:{ legend:{ position:'right' } } }
+  });
+
+  platformChart = new Chart(ctxPlatform, {
+    type:'doughnut',
+    data:{ labels:platformLabels, datasets:[{ data:platformValues, backgroundColor:['#ff5722','#2196f3','#4caf50','#9c27b0','#00bcd4'] }]},
+    options:{ responsive:true, plugins:{ legend:{ position:'right' } } }
+  });
+
+  yearChart = new Chart(ctxYear, {
+    type:'bar',
+    data:{ labels:yearLabels, datasets:[{ label:'Games', data:yearValues, backgroundColor:'#4caf50' }]},
+    options:{ responsive:true, plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true } } }
+  });
+
+  monthChart = new Chart(ctxMonth, {
+    type:'bar',
+    data:{ labels:monthLabels, datasets:[{ label:'Games', data:monthValues, backgroundColor:'#1177a3' }]},
+    options:{ responsive:true, plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true } } }
+  });
 }
 
 /* ---------- update UI ---------- */
@@ -314,6 +424,32 @@ searchInput.addEventListener('input', () => {
     `;
   }
 }
+
+/* ---------- tab handling -----------*/
+const dashboardContent = document.getElementById('dashboardContent');
+const statsContent = document.getElementById('statsContent');
+
+const menuLinks = document.querySelectorAll('.navbar .menu a');
+const dashboardLink = [...menuLinks].find(a => a.textContent.trim() === 'Dashboard');
+const statsLink = [...menuLinks].find(a => a.textContent.trim() === 'Stats');
+
+function showDashboard() {
+  dashboardContent.style.display = 'block';
+  statsContent.style.display = 'none';
+  dashboardLink.classList.add('active');
+  statsLink.classList.remove('active');
+}
+
+function showStats() {
+  dashboardContent.style.display = 'none';
+  statsContent.style.display = 'block';
+  statsLink.classList.add('active');
+  dashboardLink.classList.remove('active');
+  updateStats(); // redraw the charts
+}
+
+dashboardLink.addEventListener('click', e => { e.preventDefault(); showDashboard(); });
+statsLink.addEventListener('click', e => { e.preventDefault(); showStats(); });
 
 /* ---------- table change handling ---------- */
 document.getElementById('gamesTable').addEventListener('change', e => {
