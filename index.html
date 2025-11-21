@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Game Dashboard</title>
 <style>
-  body { margin:0; background:#141414; font-family:Arial,sans-serif; color:#fff; }
+  body { margin-bottom: 120px; margin:0; background:#141414; font-family:Arial,sans-serif; color:#fff; }
   .navbar { display:flex; justify-content:space-between; align-items:center; padding:20px 40px; border-bottom:1px solid #222; }
   .navbar .logo { font-size:1.5rem; font-weight:bold; }
   .navbar .menu { display:flex; gap:30px; }
@@ -155,6 +155,13 @@
         <div class="card-header"><h3>Games by Month</h3></div>
         <canvas id="monthChart"></canvas>
       </div>
+      <div class="card" style="max-height:120px">
+        <div class="card-header"><h3>Completion Goal</h3></div>
+        <div class="saving-goal" id="completionTextStats"></div>
+        <div class="progress-bar">
+      		<div class="progress-bar-fill" id="completionBarStats"></div>
+       </div>
+      </div>
     </div>
   </div>
 </div>
@@ -263,7 +270,7 @@ function updateStats() {
   const yearLabels = Object.keys(yearCount).sort((a,b)=>b-a);
   const yearValues = yearLabels.map(y=>yearCount[y]);
 
-    const MONTHS_FULL =["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const MONTHS_FULL =["January","February","March","April","May","June","July","August","September","October","November","December"];
   const MONTHS_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
   const monthValues = MONTHS_SHORT.map(short => {
@@ -321,6 +328,8 @@ function updateUI() {
   const summaryBox = document.getElementById('summary');
   const completionText = document.getElementById('completionText');
   const completionBar = document.getElementById('completionBar');
+  const completionTextStats = document.getElementById('completionTextStats');
+  const completionBarStats = document.getElementById('completionBarStats');
 
   tbody.innerHTML = '';
   recentList.innerHTML = '';
@@ -412,6 +421,9 @@ searchInput.addEventListener('input', () => {
   const percent = totalGames ? (completed/totalGames)*100 : 0;
   if(completionBar) completionBar.style.width = percent+'%';
   if(completionText) completionText.textContent = `${completed} / ${totalGames} Completed`;
+  
+  if(completionBarStats) completionBarStats.style.width = percent+'%';
+  if(completionTextStats) completionTextStats.textContent = `${completed} / ${totalGames} Completed`;
 
   // summary
   if(summaryBox){
