@@ -6,7 +6,7 @@
 <title>Game Dashboard</title>
 <style>
 :root {
-  /* Core Colors */
+  /* Core Colors*/
   --background: #141414;
   --card: #1E1E1E;
   --card-inlay: #1a1a1a;
@@ -14,13 +14,13 @@
   --hover: #383838;
   --border: #222;
   --radius: 8px;
-
+  
   /* Fonts */
   --font-main: Arial, sans-serif;
   --font-size-small: 14px;
   --font-size-medium: 16px;
   --font-size-large: 18px;
-  --font-size-exta-large: 24px;
+  --font-size-extra-large: 24px;
 
   /* Text Colors */
   --text: #fff;
@@ -29,8 +29,8 @@
   /* Status Colors */
   --status-completed: #278041;
   --status-inprogress: #1177a3;
-  --status-onhold: #616161;
-  --status-notstarted: #a62327;
+  --status-notstarted: #616161;
+  --status-onhold: #a62327;
   --progressbar: #4caf50;
 }
 
@@ -50,7 +50,7 @@ body {
   padding: 20px 40px;
   border-bottom: 1px solid var(--border);
 }
-.navbar .logo { font-size: var(--font-size-exta-large); font-weight: bold;}
+.navbar .logo { font-size: var(--font-size-extra-large); font-weight: bold;}
 .navbar .menu { display: flex; gap: 30px; }
 .navbar .menu a {
   color: var(--text-muted);
@@ -167,15 +167,15 @@ ul li { margin-bottom: 8px; font-size: var(--font-size-medium); }
   border-radius: var(--radius);
   border: 1px solid var(--border);
   font-size: var(--font-size-small);
-  background: #111;
+  background: var(--button);
   color: var(--text);
 }
 
 /* Status Colors */
-.statusNotStarted { background: var(--status-onhold); }
+.statusNotStarted { background: var(--status-notstarted); }
 .statusInProgress { background: var(--status-inprogress); }
 .statusCompleted { background: var(--status-completed); }
-.statusOnHold { background: var(--status-notstarted); }
+.statusOnHold { background: var(--status-onhold); }
 
 /* Progress Bar */
 .progress-bar {
@@ -238,6 +238,28 @@ ul li { margin-bottom: 8px; font-size: var(--font-size-medium); }
 #confirmAddGame { background: var(--status-completed); }
 #saveProfile { background: var(--status-completed); }
 
+/* Cerulean Theme */
+body.alt-theme {
+  /* Core Colors */
+  --background: #0F1C23;
+  --card: #162933;
+  --card-inlay: #13262C;
+  --button: #1D3B48;
+  --hover: #2A4F63;
+  --border: #1A3642;
+  --radius: 8px;
+
+  /* Text Colors */
+  --text: #fff;
+  --text-muted: #999;
+  
+  /* Status Colors */
+  --status-completed: #2e7d32;
+  --status-inprogress: #1976d2;
+  --status-onhold: #757575;
+  --status-notstarted: #c62828;
+}
+
 /* Responsive */
 @media (max-width:900px){
   .grid { grid-template-columns: 1fr; }
@@ -254,7 +276,7 @@ ul li { margin-bottom: 8px; font-size: var(--font-size-medium); }
     <a href="#">Platforms</a>
     <a href="#">Wishlist</a>
     <a href="#">Stats</a>
-    <a href="#">Settings</a>
+    <a href="#" id="openSettingsModal">Settings</a>
     <a href="#">Account</a>
   </div>
   <div class="profile">
@@ -350,6 +372,19 @@ ul li { margin-bottom: 8px; font-size: var(--font-size-medium); }
        </div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- Settings Modal -->
+<div id="settingsModal" class="modal">
+  <div class="modal-content">
+    <h3>Settings</h3>
+
+    <h4>Choose Theme</h4>
+    <button class="theme-btn" data-theme="default">Default Theme</button>
+    <button class="theme-btn" data-theme="alt">Alternate Theme</button>
+
+    <button id="closeSettingsModal">Close</button>
   </div>
 </div>
 
@@ -491,6 +526,9 @@ function updateStats() {
   const ctxPlatform = document.getElementById('platformChart').getContext('2d');
   const ctxYear = document.getElementById('yearChart').getContext('2d');
   const ctxMonth = document.getElementById('monthChart').getContext('2d');
+  
+  const cardInlay = getComputedStyle(document.documentElement).getPropertyValue('--card-inlay').trim();
+  const gridColor = getComputedStyle(document.documentElement).getPropertyValue('--background').trim();
 
   statusChart = new Chart(ctxStatus, {
     type:'doughnut',
@@ -507,15 +545,15 @@ function updateStats() {
   yearChart = new Chart(ctxYear, {
   type: 'bar',
   data: { labels: yearLabels, datasets: [{ label: 'Games', data: yearValues, backgroundColor: '#1177a3' }]},
-  options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0, callback: value => Number.isInteger(value) ? value : null }, grid: { color: '#141414' }}, x: { grid: { color: '#141414' } } } },
-  plugins: [{ beforeDraw: (chart) => { const ctx = chart.ctx; ctx.save(); ctx.fillStyle = '#1a1a1a'; ctx.fillRect(0, 0, chart.width, chart.height); ctx.restore(); } } ]
+  options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0, callback: value => Number.isInteger(value) ? value : null }, grid: { color: gridColor }}, x: { grid: { color: gridColor } } } },
+  plugins: [{ beforeDraw: (chart) => { const ctx = chart.ctx; ctx.save(); ctx.fillStyle = cardInlay; ctx.fillRect(0, 0, chart.width, chart.height); ctx.restore(); } } ]
   });
 
   monthChart = new Chart(ctxMonth, {
     type: 'bar',
     data: { labels: monthLabels, datasets: [{ label: 'Games', data: monthValues, backgroundColor: '#1177a3' }]},
-    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0, callback: value => Number.isInteger(value) ? value : null }, grid: { color: '#141414' }}, x: { grid: { color: '#141414' } } } },
-    plugins: [{ beforeDraw: (chart) => { const ctx = chart.ctx; ctx.save(); ctx.fillStyle = '#1a1a1a'; ctx.fillRect(0, 0, chart.width, chart.height); ctx.restore(); } } ]
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0, callback: value => Number.isInteger(value) ? value : null }, grid: { color: gridColor }}, x: { grid: { color: gridColor } } } },
+    plugins: [{ beforeDraw: (chart) => { const ctx = chart.ctx; ctx.save(); ctx.fillStyle = cardInlay; ctx.fillRect(0, 0, chart.width, chart.height); ctx.restore(); } } ]
     });
  }
 
@@ -530,6 +568,7 @@ function updateUI() {
   const completionTextStats = document.getElementById('completionTextStats');
   const completionBarStats = document.getElementById('completionBarStats');
 
+  // clear old content
   tbody.innerHTML = '';
   recentList.innerHTML = '';
   inProgressList.innerHTML = '';
@@ -541,60 +580,102 @@ function updateUI() {
   let notStarted = 0;
   let onHold = 0;
 
+  // prebuild month/year options for reuse
+  const monthOptionsHTML = makeMonthOptions('');
+  const yearOptionsHTML = makeYearOptions('');
+
+  const tbodyFrag = document.createDocumentFragment();
+  const recentFrag = document.createDocumentFragment();
+  const inProgressFrag = document.createDocumentFragment();
+
   Object.keys(gameData).forEach(platform => {
     if (platform === 'prefix') return;
+
     gameData[platform].forEach((g, index) => {
       totalGames++;
 
       const month = g.month || '';
       const year = g.year || '';
 
-      tbody.innerHTML += `
-<tr>
-  <td>${escapeHtml(g.title)}</td>
-  <td>${platform}</td>
-  <td>
-    <select class="statusSelect status${g.status}" data-platform="${platform}" data-index="${index}">
-      <option value="NotStarted" ${g.status==='NotStarted'?'selected':''}>Not Started</option>
-      <option value="InProgress" ${g.status==='InProgress'?'selected':''}>In Progress</option>
-      <option value="OnHold" ${g.status==='OnHold'?'selected':''}>On Hold</option>
-      <option value="Completed" ${g.status==='Completed'?'selected':''}>Completed</option>
-    </select>
-  </td>
-  <td>
-    <select class="monthSelect" data-platform="${platform}" data-index="${index}" style="background:#222; color:#fff; border-radius:6px; padding:4px; border:1px solid #222;">
-      ${makeMonthOptions(month)}
-    </select>
-  </td>
-  <td>
-    <select class="yearSelect" data-platform="${platform}" data-index="${index}" style="background:#222; color:#fff; border-radius:6px; padding:4px; border:1px solid #222;">
-      ${makeYearOptions(year)}
-    </select>
-  </td>
-        <td><span class="button-delete" data-index="${index}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="20" height="20" fill="currentColor">
-      <path d="M80,20L60,20L60,15C60,12.239,57.761,10,55,10L45,10C42.239,10,40,12.239,40,15L40,20L20,20C17.239,20,15,22.239,15,25L15,30L85,30L85,25C85,22.239,82.761,20,80,20ZM45,20L45,15L55,15L55,20L45,20Z"/>
-      <path d="M20,90L80,90L80,35L20,35L20,90ZM65,40L70,40L70,85L65,85L65,40ZM47.5,40L52.5,40L52.5,85L47.5,85L47.5,40ZM30,40L35,40L35,85L30,85L30,40Z"/>
-    </svg></span></td>
-      </tr>
-    `;
+      // create table row
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${escapeHtml(g.title)}</td>
+        <td>${platform}</td>
+        <td>
+          <select class="statusSelect status${g.status}" data-platform="${platform}" data-index="${index}">
+            <option value="NotStarted" ${g.status==='NotStarted'?'selected':''}>Not Started</option>
+            <option value="InProgress" ${g.status==='InProgress'?'selected':''}>In Progress</option>
+            <option value="OnHold" ${g.status==='OnHold'?'selected':''}>On Hold</option>
+            <option value="Completed" ${g.status==='Completed'?'selected':''}>Completed</option>
+          </select>
+        </td>
+        <td>
+          <select class="monthSelect" data-platform="${platform}" data-index="${index}">
+            ${makeMonthOptions(month)}
+          </select>
+        </td>
+        <td>
+          <select class="yearSelect" data-platform="${platform}" data-index="${index}">
+            ${makeYearOptions(year)}
+          </select>
+        </td>
+        <td>
+          <span class="button-delete" data-platform="${platform}" data-index="${index}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="20" height="20" fill="currentColor">
+              <path d="M80,20L60,20L60,15C60,12.239,57.761,10,55,10L45,10C42.239,10,40,12.239,40,15L40,20L20,20C17.239,20,15,22.239,15,25L15,30L85,30L85,25C85,22.239,82.761,20,80,20ZM45,20L45,15L55,15L55,20L45,20Z"/>
+              <path d="M20,90L80,90L80,35L20,35L20,90ZM65,40L70,40L70,85L65,85L65,40ZM47.5,40L52.5,40L52.5,85L47.5,85L47.5,40ZM30,40L35,40L35,85L30,85L30,40Z"/>
+            </svg>
+          </span>
+        </td>
+      `;
+      tbodyFrag.appendChild(tr);
 
-      // count statuses
+      // count statuses and append to fragments
       switch(g.status) {
         case 'Completed':
           completed++;
-          if(month && year) recentList.innerHTML += `<li>${escapeHtml(g.title)} — ${month} ${year}</li>`;
-          else recentList.innerHTML += `<li>${escapeHtml(g.title)}</li>`;
+          const recentLi = document.createElement('li');
+          recentLi.textContent = month && year ? `${g.title} — ${month} ${year}` : g.title;
+          recentFrag.appendChild(recentLi);
           break;
         case 'InProgress':
           inProgress++;
-          inProgressList.innerHTML += `<li>${escapeHtml(g.title)}</li>`;
+          const inProgressLi = document.createElement('li');
+          inProgressLi.textContent = g.title;
+          inProgressFrag.appendChild(inProgressLi);
           break;
         case 'NotStarted': notStarted++; break;
         case 'OnHold': onHold++; break;
       }
     });
   });
-  
+
+  // append fragments to DOM in one go
+  tbody.appendChild(tbodyFrag);
+  recentList.appendChild(recentFrag);
+  inProgressList.appendChild(inProgressFrag);
+
+  // completion bar
+  const percent = totalGames ? (completed/totalGames)*100 : 0;
+  if(completionBar) completionBar.style.width = percent+'%';
+  if(completionText) completionText.textContent = `${completed} / ${totalGames} Completed`;
+
+  if(completionBarStats) completionBarStats.style.width = percent+'%';
+  if(completionTextStats) completionTextStats.textContent = `${completed} / ${totalGames} Completed`;
+
+  // summary
+  if(summaryBox){
+    summaryBox.innerHTML = `
+      <li>Total Games: ${totalGames}</li>
+      <li>Completed: ${completed}</li>
+      <li>In Progress: ${inProgress}</li>
+      <li>Not Started: ${notStarted}</li>
+      <li>On Hold: ${onHold}</li>
+    `;
+  }
+}
+
   const searchInput = document.getElementById('gameSearch');
 
 searchInput.addEventListener('input', () => {
@@ -616,24 +697,45 @@ searchInput.addEventListener('input', () => {
   });
 });
 
-  // completion bar
-  const percent = totalGames ? (completed/totalGames)*100 : 0;
-  if(completionBar) completionBar.style.width = percent+'%';
-  if(completionText) completionText.textContent = `${completed} / ${totalGames} Completed`;
-  
-  if(completionBarStats) completionBarStats.style.width = percent+'%';
-  if(completionTextStats) completionTextStats.textContent = `${completed} / ${totalGames} Completed`;
+/* ---------- theme handling -----------*/
+const SettingsModal = document.getElementById("settingsModal");
+const openSettings = document.getElementById("openSettingsModal");
+const closeSettings = document.getElementById("closeSettingsModal");
 
-  // summary
-  if(summaryBox){
-    summaryBox.innerHTML = `
-      <li>Total Games: ${totalGames}</li>
-      <li>Completed: ${completed}</li>
-      <li>In Progress: ${inProgress}</li>
-      <li>Not Started: ${notStarted}</li>
-      <li>On Hold: ${onHold}</li>
-    `;
-  }
+// Open modal
+openSettings.addEventListener("click", (e) => {
+  e.preventDefault();
+  SettingsModal.style.display = "flex";
+});
+
+// Close modal
+closeSettings.addEventListener("click", () => {
+  SettingsModal.style.display = "none";
+});
+
+// Click outside modal closes it
+SettingsModal.addEventListener("click", (e) => {
+  if (e.target === SettingsModal) SettingsModal.style.display = "none";
+});
+
+// Theme buttons
+document.querySelectorAll(".theme-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const theme = btn.dataset.theme;
+
+    if (theme === "alt") {
+      document.body.classList.add("alt-theme");
+    } else {
+      document.body.classList.remove("alt-theme");
+    }
+
+    localStorage.setItem("theme", theme);
+  });
+});
+
+// Load saved theme
+if (localStorage.getItem("theme") === "alt") {
+  document.body.classList.add("alt-theme");
 }
 
 /* ---------- tab handling -----------*/
