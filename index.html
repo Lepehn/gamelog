@@ -501,9 +501,9 @@ function updateStats() {
   });
 
   monthChart = new Chart(ctxMonth, {
-    type:'bar',
-    data:{ labels:monthLabels, datasets:[{ label:'Games', data:monthValues, backgroundColor:'#1177a3' }]},
-    options:{ responsive:true, plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true } } }
+    type: 'bar',
+    data:{ labels: monthLabels, datasets: [{ label: 'Games', data: monthValues, backgroundColor: '#1177a3' }]},
+    options:{ responsive: true, plugins: { legend: { display: false }}, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0, callback: value => Number.isInteger(value) ? value : null } } } }
   });
 }
 
