@@ -1,5 +1,6 @@
 # 🎮 Game Backlog
 
+lepehn.github.io/gamelog/
 A simple and stylish HTML-based game backlog tracker that lets you manage your collection across platforms like Epic, Nintendo, PlayStation, Steam, and Xbox. Includes a dashboard with detailed stats and interactive charts.
 
 ## 🧩 Features
