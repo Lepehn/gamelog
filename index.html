@@ -9,8 +9,9 @@
   /* Core Colors */
   --background: #141414;
   --card: #1E1E1E;
+  --card-inlay: #1a1a1a;
   --button: #262626;
-  --button-hover: #383838;
+  --hover: #383838;
   --border: #222;
   --radius: 8px;
 
@@ -25,14 +26,12 @@
   --text: #fff;
   --text-muted: #999;
 
-  /* Accents */
-  --accent: #1177a3;
-
   /* Status Colors */
   --status-completed: #278041;
   --status-inprogress: #1177a3;
   --status-onhold: #616161;
   --status-notstarted: #a62327;
+  --progressbar: #4caf50;
 }
 
 body {
@@ -120,7 +119,7 @@ body {
 .button-delete svg {
   background: var(--button);
   padding: 6px 12px;
-  border-radius: 6px;
+  border-radius: var(--radius);
   font-size: var(--font-size-small);
   cursor: pointer;
   color: var(--text);
@@ -130,7 +129,7 @@ body {
 }
 .button-report:hover,
 .button-delete svg:hover {
-  background: var(--button-hover);
+  background: var(--hover);
 }
 
 /* Table */
@@ -144,7 +143,7 @@ table th { color: var(--text-muted); text-align: left; }
 
 /* Lists */
 ul { padding-left: 20px; }
-ul li { margin-bottom: 8px; color: #ccc; font-size: var(--font-size-medium); }
+ul li { margin-bottom: 8px; font-size: var(--font-size-medium); }
 
 /* Scroll */
 .scrollable-list-small,
@@ -152,17 +151,20 @@ ul li { margin-bottom: 8px; color: #ccc; font-size: var(--font-size-medium); }
   margin-top: 12px;
   overflow-y: auto;
   padding-right: 8px;
-  scrollbar-color: var(--button-hover) #1a1a1a;
+  scrollbar-color: var(--hover) var(--card-inlay);
+  
 }
 .scrollable-list-small { max-height: 160px; }
 .scrollable-list-large { max-height: 400px; }
+
+#gameSearch { padding:6px; width:300px; border-radius: var(--radius); border:1px solid var(--border); background: var(--card-inlay); color: var(--text); font-size:var(--font-size-small); }
 
 /* Selects */
 .statusSelect,
 .monthSelect,
 .yearSelect {
   padding: 6px 12px;
-  border-radius: 6px;
+  border-radius: var(--radius);
   border: 1px solid var(--border);
   font-size: var(--font-size-small);
   background: #111;
@@ -177,7 +179,7 @@ ul li { margin-bottom: 8px; color: #ccc; font-size: var(--font-size-medium); }
 
 /* Progress Bar */
 .progress-bar {
-  background: #333;
+  background: var(--card-inlay);
   width: 100%;
   height: 8px;
   border-radius: 4px;
@@ -185,7 +187,7 @@ ul li { margin-bottom: 8px; color: #ccc; font-size: var(--font-size-medium); }
   margin-top: 10px;
 }
 .progress-bar-fill {
-  background: #4caf50;
+  background: var(--progressbar);
   height: 100%;
   width: 0%;
   transition: width 0.4s ease;
@@ -205,28 +207,36 @@ ul li { margin-bottom: 8px; color: #ccc; font-size: var(--font-size-medium); }
   z-index: 40;
 }
 .modal-content {
-  background: #222;
+  background: var(--card);
   padding: 20px;
-  border-radius: 10px;
+  border-radius: var(--radius);
   width: 320px;
   max-width: 95%;
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
-.modal-content input,
+.modal-content input {
+  padding: 8px;
+  border-radius: var(--radius);
+  border: none;
+  font-size: var(--font-size-small);
+  background: var(--card-inlay);
+  color: var(--text);
+}
 .modal-content select,
 .modal-content button {
   padding: 8px;
-  border-radius: 6px;
+  border-radius: var(--radius);
   border: none;
   font-size: var(--font-size-small);
-  background: #111;
+  background: var(--button);
   color: var(--text);
 }
 #closeModal,
-#closeAccountModal { background: #555; }
+#closeAccountModal { background: var(--button); }
 #confirmAddGame { background: var(--status-completed); }
+#saveProfile { background: var(--status-completed); }
 
 /* Responsive */
 @media (max-width:900px){
@@ -282,7 +292,7 @@ ul li { margin-bottom: 8px; color: #ccc; font-size: var(--font-size-medium); }
           <span class="button-report" id="importBtn">Import</span>
           <span class="button-report" id="openAddGame">New Game</span>
           <input type="file" id="importJSON" accept=".json" style="display:none;">
-          <input type="text" id="gameSearch" placeholder="Search games..." style="padding:6px; width:300px; border-radius:6px; border:1px solid #222; background:#1b1b1b; color:white; font-size:var(--font-size-small);">
+          <input type="text" id="gameSearch" placeholder="Search games...">
         </div>
         <div class="scrollable-list-large">
           <table id="gamesTable">
@@ -495,17 +505,19 @@ function updateStats() {
   });
 
   yearChart = new Chart(ctxYear, {
-    type:'bar',
-    data:{ labels:yearLabels, datasets:[{ label:'Games', data:yearValues, backgroundColor:'#4caf50' }]},
-    options:{ responsive:true, plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true } } }
+  type: 'bar',
+  data: { labels: yearLabels, datasets: [{ label: 'Games', data: yearValues, backgroundColor: '#1177a3' }]},
+  options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0, callback: value => Number.isInteger(value) ? value : null }, grid: { color: '#141414' }}, x: { grid: { color: '#141414' } } } },
+  plugins: [{ beforeDraw: (chart) => { const ctx = chart.ctx; ctx.save(); ctx.fillStyle = '#1a1a1a'; ctx.fillRect(0, 0, chart.width, chart.height); ctx.restore(); } } ]
   });
 
   monthChart = new Chart(ctxMonth, {
     type: 'bar',
-    data:{ labels: monthLabels, datasets: [{ label: 'Games', data: monthValues, backgroundColor: '#1177a3' }]},
-    options:{ responsive: true, plugins: { legend: { display: false }}, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0, callback: value => Number.isInteger(value) ? value : null } } } }
-  });
-}
+    data: { labels: monthLabels, datasets: [{ label: 'Games', data: monthValues, backgroundColor: '#1177a3' }]},
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0, callback: value => Number.isInteger(value) ? value : null }, grid: { color: '#141414' }}, x: { grid: { color: '#141414' } } } },
+    plugins: [{ beforeDraw: (chart) => { const ctx = chart.ctx; ctx.save(); ctx.fillStyle = '#1a1a1a'; ctx.fillRect(0, 0, chart.width, chart.height); ctx.restore(); } } ]
+    });
+ }
 
 /* ---------- update UI ---------- */
 function updateUI() {
