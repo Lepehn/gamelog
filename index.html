@@ -152,7 +152,7 @@
         <canvas id="yearChart"></canvas>
       </div>
       <div class="card" style="max-height:360px">
-        <div class="card-header"><h3>Games by Month</h3></div>
+        <div class="card-header"><h3>Games by Month <span id="currentYear"></span></h3></div>
         <canvas id="monthChart"></canvas>
       </div>
       <div class="card" style="max-height:120px">
@@ -273,12 +273,22 @@ function updateStats() {
   const MONTHS_FULL =["January","February","March","April","May","June","July","August","September","October","November","December"];
   const MONTHS_SHORT = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
+  const currentYear = new Date().getFullYear().toString();
+  document.getElementById("currentYear").textContent = `(${new Date().getFullYear()})`;
+
   const monthValues = MONTHS_SHORT.map(short => {
     let count = 0;
+
     Object.keys(gameData).forEach(platform => {
-      if(platform==='prefix') return;
-      gameData[platform].forEach(g => { if(g.month === short) count++; });
+      if(platform === 'prefix') return;
+
+      gameData[platform].forEach(g => {
+        if (g.year === currentYear && g.month === short) {
+          count++;
+        }
+      });
     });
+
     return count;
   });
   
