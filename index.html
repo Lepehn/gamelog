@@ -792,8 +792,6 @@ document.getElementById('gamesTable').addEventListener('click', e => {
   const idx = Number(btn.dataset.index);
   if(isNaN(idx)) return;
 
-  if(!confirm(`Delete "${gameData[platform][idx].title}"?`)) return;
-
   gameData[platform].splice(idx,1);
   saveGames();
   updateUI();
@@ -929,10 +927,8 @@ importInput.addEventListener('change', function(e){
       });
       saveGames();
       updateUI();
-      alert('Import complete');
     }catch(err){
       console.error(err);
-      alert('Invalid JSON file');
     }
   };
   reader.readAsText(file);
