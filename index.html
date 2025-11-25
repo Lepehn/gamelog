@@ -157,7 +157,7 @@ ul li { margin-bottom: 8px; font-size: var(--font-size-medium); }
 .scrollable-list-small { max-height: 160px; }
 .scrollable-list-large { max-height: 400px; }
 
-#gameSearch { padding:6px; width:300px; border-radius: var(--radius); border:1px solid var(--border); background: var(--card-inlay); color: var(--text); font-size:var(--font-size-small); }
+#gameSearch, #wishlistSearch { padding:6px; width:300px; border-radius: var(--radius); border:1px solid var(--border); background: var(--card-inlay); color: var(--text); font-size:var(--font-size-small); }
 
 /* Selects */
 .statusSelect,
@@ -267,7 +267,6 @@ body.alt-theme {
   <div class="logo">.games</div>
   <div class="menu">
     <a class="active" href="#">Dashboard</a>
-    <a href="#">Platforms</a>
     <a href="#">Wishlist</a>
     <a href="#">Stats</a>
     <a href="#" id="openSettingsModal">Settings</a>
@@ -336,6 +335,32 @@ body.alt-theme {
       </div>
     </div>
   </div>
+  
+    <!-- Wishlist content -->
+  <div id="wishlistContent" style="display:none;">
+    <h1>Wishlist</h1>
+    <p>Hi <span id="welcomeName">Lepehn</span>, here is your wishlist</p>
+    <div class="grid">
+    <div class="card games">
+        <div class="card-header">
+          <h3>Games</h3>
+          <span class="button-report" id="openAddWishlistGame">New Game</span>
+          <input type="text" id="wishlistSearch" placeholder="Search games...">
+        </div>
+        <div class="scrollable-list-large">
+          <table id="gamesWishlistTable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+       </div>
+     </div>
+    </div>
+</div>
 
   <!-- Stats content -->
   <div id="statsContent" style="display:none;">
@@ -434,7 +459,7 @@ const YEAR_START = 1980;
 const YEAR_END = new Date().getFullYear();
 
 /* ---------- storage ---------- */
-const gameData = JSON.parse(localStorage.getItem('gameData')) || { prefix: 'gameBacklog', epic: [], nintendo: [], playstation: [], steam: [], xbox: [] };
+const gameData = JSON.parse(localStorage.getItem('gameData')) || { prefix: 'gameBacklog', epic: [], nintendo: [], playstation: [], steam: [], xbox: [], wishlist: [] };
 function saveGames(){ localStorage.setItem('gameData', JSON.stringify(gameData)); }
 
 /* ---------- helpers ---------- */
@@ -583,7 +608,7 @@ function updateUI() {
   const inProgressFrag = document.createDocumentFragment();
 
   Object.keys(gameData).forEach(platform => {
-    if (platform === 'prefix') return;
+    if (platform === 'prefix'|| platform === 'wishlist') return;
 
     gameData[platform].forEach((g, index) => {
       totalGames++;
@@ -670,7 +695,28 @@ function updateUI() {
   }
 }
 
-  const searchInput = document.getElementById('gameSearch');
+function updateWishlistUI() {
+  const tbody = document.querySelector('#gamesWishlistTable tbody');
+  tbody.innerHTML = '';
+
+  gameData.wishlist.forEach((g, index) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${escapeHtml(g.title)}</td>
+      <td>
+        <span class="button-delete" data-type="wishlist" data-index="${index}">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="20" height="20" fill="currentColor">
+            <path d="M80,20L60,20L60,15C60,12.239,57.761,10,55,10L45,10C42.239,10,40,12.239,40,15L40,20L20,20C17.239,20,15,22.239,15,25L15,30L85,30L85,25C85,22.239,82.761,20,80,20ZM45,20L45,15L55,15L55,20L45,20Z"/>
+            <path d="M20,90L80,90L80,35L20,35L20,90ZM65,40L70,40L70,85L65,85L65,40ZM47.5,40L52.5,40L52.5,85L47.5,85L47.5,40ZM30,40L35,40L35,85L30,85L30,40Z"/>
+          </svg>
+        </span>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+const searchInput = document.getElementById('gameSearch');
 
 searchInput.addEventListener('input', () => {
   const query = searchInput.value.toLowerCase();
@@ -684,6 +730,29 @@ searchInput.addEventListener('input', () => {
     const year = row.cells[4].querySelector('select').value.toLowerCase();
 
     if(title.includes(query) || platform.includes(query) || status.includes(query) || month.includes(query) || year.includes(query)) {
+      row.style.display = '';
+    } else {
+      row.style.display = 'none';
+    }
+  });
+});
+
+const wishlistSearchInput = document.getElementById('wishlistSearch');
+
+wishlistSearchInput.addEventListener('input', () => {
+  const query = wishlistSearchInput.value.toLowerCase();
+  const tbody = document.querySelector('#gamesWishlistTable tbody');
+
+  Array.from(tbody.querySelectorAll('tr')).forEach(row => {
+    const title = row.cells[0]?.textContent.toLowerCase() || '';
+    const platform = row.cells[1]?.textContent.toLowerCase() || '';
+    
+    // Only try to read selects if they exist
+    const status = row.cells[2]?.querySelector('select')?.value.toLowerCase() || '';
+    const month = row.cells[3]?.querySelector('select')?.value.toLowerCase() || '';
+    const year = row.cells[4]?.querySelector('select')?.value.toLowerCase() || '';
+
+    if (title.includes(query) || platform.includes(query) || status.includes(query) || month.includes(query) || year.includes(query)) {
       row.style.display = '';
     } else {
       row.style.display = 'none';
@@ -735,28 +804,45 @@ if (localStorage.getItem("theme") === "alt") {
 /* ---------- tab handling -----------*/
 const dashboardContent = document.getElementById('dashboardContent');
 const statsContent = document.getElementById('statsContent');
+const wishlistContent = document.getElementById('wishlistContent');
 
 const menuLinks = document.querySelectorAll('.navbar .menu a');
 const dashboardLink = [...menuLinks].find(a => a.textContent.trim() === 'Dashboard');
 const statsLink = [...menuLinks].find(a => a.textContent.trim() === 'Stats');
+const wishlistLink = [...menuLinks].find(a => a.textContent.trim() === 'Wishlist');
 
 function showDashboard() {
   dashboardContent.style.display = 'block';
   statsContent.style.display = 'none';
+  wishlistContent.style.display = 'none';
   dashboardLink.classList.add('active');
   statsLink.classList.remove('active');
+  wishlistLink.classList.remove('active');
 }
 
 function showStats() {
   dashboardContent.style.display = 'none';
   statsContent.style.display = 'block';
+  wishlistContent.style.display = 'none';
   statsLink.classList.add('active');
   dashboardLink.classList.remove('active');
-  updateStats(); // redraw the charts
+  wishlistLink.classList.remove('active');
+  updateStats();
+}
+
+function showWishlist() {
+  dashboardContent.style.display = 'none';
+  statsContent.style.display = 'none';
+  wishlistContent.style.display = 'block';
+  wishlistLink.classList.add('active');
+  dashboardLink.classList.remove('active');
+  statsLink.classList.remove('active');
+  updateWishlistUI();
 }
 
 dashboardLink.addEventListener('click', e => { e.preventDefault(); showDashboard(); });
 statsLink.addEventListener('click', e => { e.preventDefault(); showStats(); });
+wishlistLink.addEventListener('click', e => { e.preventDefault(); showWishlist(); });
 
 /* ---------- table change handling ---------- */
 document.getElementById('gamesTable').addEventListener('change', e => {
@@ -787,6 +873,27 @@ document.getElementById('gamesTable').addEventListener('click', e => {
   if(isNaN(idx)) return;
 
   gameData[platform].splice(idx,1);
+  saveGames();
+  updateUI();
+});
+
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.button-delete');
+  if (!btn) return;
+
+  const type = btn.dataset.type;
+  const index = Number(btn.dataset.index);
+
+  if (type === "wishlist") {
+    gameData.wishlist.splice(index, 1);
+    saveGames();
+    updateWishlistUI();
+    return;
+  }
+
+  // normal game deletion
+  const platform = btn.dataset.platform;
+  gameData[platform].splice(index, 1);
   saveGames();
   updateUI();
 });
@@ -850,6 +957,7 @@ accountModal.addEventListener('click', e => {
 
 /* ---------- add game modal ---------- */
 const modal = document.getElementById('addGameModal');
+const openAddWishlistGameBtn = document.getElementById("openAddWishlistGame");
 const openBtn = document.getElementById('openAddGame');
 const closeBtn = document.getElementById('closeModal');
 const confirmAdd = document.getElementById('confirmAddGame');
@@ -859,10 +967,13 @@ const modalStatus = document.getElementById('modalGameStatus');
 const modalMonth = document.getElementById('modalGameMonth');
 const modalYear = document.getElementById('modalGameYear');
 
+let addingToWishlist = false;
+
 modalMonth.innerHTML = makeMonthOptions('');
 modalYear.innerHTML = makeYearOptions('');
 
 openBtn.addEventListener('click', () => {
+  addingToWishlist = false;
   modal.style.display = 'flex';
   modalName.value = '';
   modalPlatform.value = '';
@@ -871,23 +982,44 @@ openBtn.addEventListener('click', () => {
   modalYear.value = '';
 });
 
+openAddWishlistGameBtn.addEventListener("click", () => {
+  addingToWishlist = true;
+  modal.style.display = "flex";
+  modalName.value = '';
+  modalPlatform.value = '';
+  modalPlatform.style.display = 'none';
+  modalStatus.style.display = 'none';
+  modalMonth.style.display = 'none';
+  modalYear.style.display = 'none';
+});
+
 closeBtn.addEventListener('click', () => modal.style.display = 'none');
 modal.addEventListener('click', e => { if(e.target === modal) modal.style.display='none'; });
 
 confirmAdd.addEventListener('click', () => {
   const name = modalName.value.trim();
-  const platform = modalPlatform.value.trim() || 'steam';
-  const status = modalStatus.value;
-  const month = modalMonth.value || '';
-  const year = modalYear.value || '';
+  const platform = modalPlatform.value.trim();
+  if (!name) return;
+  if (!addingToWishlist && !platform) return;
 
-  if(!name) { alert('Enter a game name'); return; }
-
-  if(!gameData[platform]) gameData[platform] = [];
-  gameData[platform].push({ title: name, status, month, year });
+if (addingToWishlist) {
+  if (!gameData.wishlist) gameData.wishlist = [];
+  gameData.wishlist.push({ title: name });
   saveGames();
-  modal.style.display='none';
-  updateUI();
+  updateWishlistUI();
+} else {
+    const status = modalStatus.value;
+    const month = modalMonth.value;
+    const year = modalYear.value;
+    gameData[platform.toLowerCase()].push({
+      title: name, status, month, year
+    });
+    saveGames();
+    updateUI();
+  }
+
+  modal.style.display = "none";
+  addingToWishlist = false; // reset after adding
 });
 
 /* ---------- import/export ---------- */
@@ -903,7 +1035,7 @@ importInput.addEventListener('change', function(e){
   reader.onload = function(ev){
     try{
       const data = JSON.parse(ev.target.result);
-      ['epic','nintendo','playstation','steam','xbox'].forEach(platform => {
+      ['epic','nintendo','playstation','steam','xbox', 'wishlist'].forEach(platform => {
         if(Array.isArray(data[platform])){
           data[platform].forEach(game => {
             const exists = gameData[platform]?.some(g=> g.title===game.title && g.month===game.month && g.year===game.year);
@@ -930,16 +1062,14 @@ importInput.addEventListener('change', function(e){
 });
 
 exportBtn.addEventListener('click', ()=>{
-  const exportData = { prefix:'gameBacklog', epic:[], nintendo:[], playstation:[], steam:[], xbox:[] };
-  ['epic','nintendo','playstation','steam','xbox'].forEach(platform=>{
+  const exportData = { prefix:'gameBacklog', epic:[], nintendo:[], playstation:[], steam:[], xbox:[], wishlist:[] };
+  ['epic','nintendo','playstation','steam','xbox', 'wishlist'].forEach(platform=>{
     if(gameData[platform]) gameData[platform].forEach(g=>{
       exportData[platform].push({
         title: g.title,
         status: g.status,
         month: g.month || '',
-        year: g.year || '',
-        rating: g.rating || '',
-        note: g.note || ''
+        year: g.year || ''
       });
     });
   });
