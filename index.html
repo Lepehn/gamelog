@@ -693,8 +693,23 @@ function updateUI() {
       <li>On Hold: ${onHold}</li>
     `;
   }
+  
+  // If user typed in search, reapply it
+  const query = searchInput.value.toLowerCase();
+  if(query) {
+    Array.from(tbody.querySelectorAll('tr')).forEach(row => {
+      const title = row.cells[0].textContent.toLowerCase();
+      const platform = row.cells[1].textContent.toLowerCase();
+      const status = row.cells[2].querySelector('select').value.toLowerCase();
+      const month = row.cells[3].querySelector('select').value.toLowerCase();
+      const year = row.cells[4].querySelector('select').value.toLowerCase();
+
+      row.style.display = (title.includes(query) || platform.includes(query) || status.includes(query) || month.includes(query) || year.includes(query)) ? '' : 'none';
+    });
+  }
 }
 
+// Update Wishlist
 function updateWishlistUI() {
   const tbody = document.querySelector('#gamesWishlistTable tbody');
   tbody.innerHTML = '';
@@ -714,8 +729,17 @@ function updateWishlistUI() {
     `;
     tbody.appendChild(tr);
   });
+    // If user typed in search, reapply it
+  const query = wishlistSearchInput.value.toLowerCase();
+  if(query) {
+    Array.from(tbody.querySelectorAll('tr')).forEach(row => {
+      const title = row.cells[0].textContent.toLowerCase();
+      row.style.display = title.includes(query) ? '' : 'none';
+    });
+  }
 }
 
+// Search
 const searchInput = document.getElementById('gameSearch');
 
 searchInput.addEventListener('input', () => {
