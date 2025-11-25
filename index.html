@@ -877,25 +877,17 @@ document.getElementById('gamesTable').addEventListener('click', e => {
   updateUI();
 });
 
-document.addEventListener('click', e => {
+// Delete from wishlist
+document.getElementById('gamesWishlistTable').addEventListener('click', e => {
   const btn = e.target.closest('.button-delete');
   if (!btn) return;
 
-  const type = btn.dataset.type;
-  const index = Number(btn.dataset.index);
+  const idx = Number(btn.dataset.index);
+  if (isNaN(idx)) return;
 
-  if (type === "wishlist") {
-    gameData.wishlist.splice(index, 1);
-    saveGames();
-    updateWishlistUI();
-    return;
-  }
-
-  // normal game deletion
-  const platform = btn.dataset.platform;
-  gameData[platform].splice(index, 1);
+  gameData.wishlist.splice(idx, 1);
   saveGames();
-  updateUI();
+  updateWishlistUI();
 });
 
 /* ---------- profile handling ---------- */
