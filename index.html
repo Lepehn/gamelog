@@ -254,6 +254,22 @@ body.alt-theme {
   --text-muted: #999;
 }
 
+/* Scandi Theme */
+body.scandi-theme {
+  /* Core Colors */
+  --background: #efe8dd;
+  --card: #cab3a0;
+  --card-inlay: #decabd;
+  --button: #decabd;
+  --hover: #edeae5;
+  --border: #decabd;
+  --radius: 8px;
+
+  /* Text Colors */
+  --text: #434341;
+  --text-muted: #373A3A;
+}
+
 /* Responsive */
 @media (max-width:900px){
   .grid { grid-template-columns: 1fr; }
@@ -402,6 +418,7 @@ body.alt-theme {
     <h4>Choose Theme</h4>
     <button class="theme-btn" data-theme="default">Default Theme</button>
     <button class="theme-btn" data-theme="alt">Alternate Theme</button>
+    <button class="theme-btn" data-theme="scandi">Scandi Theme</button>
 
     <button id="closeSettingsModal">Close</button>
   </div>
@@ -548,6 +565,9 @@ function updateStats() {
   
   const cardInlay = getComputedStyle(document.documentElement).getPropertyValue('--card-inlay').trim();
   const gridColor = getComputedStyle(document.documentElement).getPropertyValue('--background').trim();
+  const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text').trim();
+  
+  Chart.defaults.color = textColor;
 
   statusChart = new Chart(ctxStatus, {
     type:'doughnut',
@@ -815,6 +835,12 @@ document.querySelectorAll(".theme-btn").forEach(btn => {
     } else {
       document.body.classList.remove("alt-theme");
     }
+    
+    if (theme === "scandi") {
+      document.body.classList.add("scandi-theme");
+    } else {
+      document.body.classList.remove("scandi-theme");
+    }
 
     localStorage.setItem("theme", theme);
   });
@@ -823,6 +849,10 @@ document.querySelectorAll(".theme-btn").forEach(btn => {
 // Load saved theme
 if (localStorage.getItem("theme") === "alt") {
   document.body.classList.add("alt-theme");
+}
+
+if (localStorage.getItem("theme") === "scandi") {
+  document.body.classList.add("scandi-theme");
 }
 
 /* ---------- tab handling -----------*/
@@ -1107,3 +1137,4 @@ updateUI();
 </script>
 </body>
 </html>
+
