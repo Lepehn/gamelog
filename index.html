@@ -32,6 +32,7 @@
   --status-notstarted: #616161;
   --status-onhold: #a62327;
   --progressbar: #4caf50;
+  --status-text: var(--text);
 }
 
 body {
@@ -168,7 +169,11 @@ ul li { margin-bottom: 8px; font-size: var(--font-size-medium); }
   border: 1px solid var(--border);
   font-size: var(--font-size-small);
   background: var(--button);
-  color: var(--text);
+  color: var(--text-muted);
+}
+
+.statusSelect {
+  color: var(--status-text);
 }
 
 /* Status Colors */
@@ -252,6 +257,9 @@ body.alt-theme {
   /* Text Colors */
   --text: #fff;
   --text-muted: #999;
+  
+  /* Status Colors */
+  --status-text: var(--text);
 }
 
 /* Scandi Theme */
@@ -268,6 +276,9 @@ body.scandi-theme {
   /* Text Colors */
   --text: #434341;
   --text-muted: #373A3A;
+  
+  /* Status Colors */
+  --status-text: var(--hover);
 }
 
 /* Responsive */
@@ -1137,4 +1148,3 @@ updateUI();
 </script>
 </body>
 </html>
-
