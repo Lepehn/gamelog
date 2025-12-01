@@ -31,6 +31,7 @@
   --status-inprogress: #1177a3;
   --status-notstarted: #616161;
   --status-onhold: #a62327;
+  --status-hundred: #689a2e;
   --progressbar: #4caf50;
   --status-text: var(--text);
 }
@@ -153,7 +154,6 @@ ul li { margin-bottom: 8px; font-size: var(--font-size-medium); }
   overflow-y: auto;
   padding-right: 8px;
   scrollbar-color: var(--hover) var(--card-inlay);
-  
 }
 .scrollable-list-small { max-height: 160px; }
 .scrollable-list-large { max-height: 400px; }
@@ -181,6 +181,7 @@ ul li { margin-bottom: 8px; font-size: var(--font-size-medium); }
 .statusInProgress { background: var(--status-inprogress); }
 .statusCompleted { background: var(--status-completed); }
 .statusOnHold { background: var(--status-onhold); }
+.statusHundred { background: var(--status-hundred); }
 
 /* Progress Bar */
 .progress-bar {
@@ -446,6 +447,7 @@ body.scandi-theme {
       <option value="InProgress">In Progress</option>
       <option value="OnHold">On Hold</option>
       <option value="Completed">Completed</option>
+      <option value="Hundred">100%</option>
     </select>
 
     <div style="display:flex; gap:8px;">
@@ -515,7 +517,7 @@ function makeYearOptions(selectedYear) {
 let statusChart, platformChart, yearChart, monthChart;
 
 function updateStats() {
-  const statusCount = { Completed:0, InProgress:0, NotStarted:0, OnHold:0 };
+  const statusCount = { Completed:0, InProgress:0, NotStarted:0, OnHold:0, Hundred:0};
   const platformCount = {};
   const yearCount = {};
   const monthCount = {};
@@ -530,7 +532,9 @@ function updateStats() {
     });
   });
 
-  const statusLabels = Object.keys(statusCount);
+  const statusLabels = Object.keys(statusCount).map(label =>
+  label === "Hundred" ? "100%" : label
+);
   const statusValues = Object.values(statusCount);
 
   const platformLabels = Object.keys(platformCount);
@@ -579,10 +583,10 @@ function updateStats() {
   const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text').trim();
   
   Chart.defaults.color = textColor;
-
+  
   statusChart = new Chart(ctxStatus, {
     type:'doughnut',
-    data:{ labels:statusLabels, datasets:[{ data:statusValues, backgroundColor:['#278041','#1177a3','#616161','#a62327'] }]},
+    data:{ labels:statusLabels, datasets:[{ data:statusValues, backgroundColor:['#278041','#1177a3','#616161','#a62327', '#689a2e'] }]},
     options:{ responsive:true, plugins:{ legend:{ position:'right' } } }
   });
 
@@ -629,6 +633,7 @@ function updateUI() {
   let inProgress = 0;
   let notStarted = 0;
   let onHold = 0;
+  let hundred = 0;
 
   // prebuild month/year options for reuse
   const monthOptionsHTML = makeMonthOptions('');
@@ -658,6 +663,7 @@ function updateUI() {
             <option value="InProgress" ${g.status==='InProgress'?'selected':''}>In Progress</option>
             <option value="OnHold" ${g.status==='OnHold'?'selected':''}>On Hold</option>
             <option value="Completed" ${g.status==='Completed'?'selected':''}>Completed</option>
+            <option value="Hundred" ${g.status==='Hundred'?'selected':''}>100%</option>
           </select>
         </td>
         <td>
@@ -697,6 +703,13 @@ function updateUI() {
           break;
         case 'NotStarted': notStarted++; break;
         case 'OnHold': onHold++; break;
+        case 'Hundred':
+          completed++;
+          hundred++;
+          const recentLi2 = document.createElement('li');
+          recentLi2.textContent = month && year ? `${g.title} — ${month} ${year}` : g.title;
+          recentFrag.appendChild(recentLi2);
+          break;
       }
     });
   });
@@ -718,6 +731,7 @@ function updateUI() {
   if(summaryBox){
     summaryBox.innerHTML = `
       <li>Total Games: ${totalGames}</li>
+      <li>100%: ${hundred}</li>
       <li>Completed: ${completed}</li>
       <li>In Progress: ${inProgress}</li>
       <li>Not Started: ${notStarted}</li>
@@ -778,17 +792,35 @@ searchInput.addEventListener('input', () => {
   const tbody = document.querySelector('#gamesTable tbody');
 
   Array.from(tbody.querySelectorAll('tr')).forEach(row => {
-    const title = row.cells[0].textContent.toLowerCase();
-    const platform = row.cells[1].textContent.toLowerCase();
-    const status = row.cells[2].querySelector('select').value.toLowerCase();
-    const month = row.cells[3].querySelector('select').value.toLowerCase();
-    const year = row.cells[4].querySelector('select').value.toLowerCase();
+    const title = row.cells[0]?.textContent.toLowerCase() || '';
+    const platform = row.cells[1]?.textContent.toLowerCase() || '';
 
-    if(title.includes(query) || platform.includes(query) || status.includes(query) || month.includes(query) || year.includes(query)) {
-      row.style.display = '';
-    } else {
-      row.style.display = 'none';
-    }
+    // safe access to selects (may be missing in some row types)
+    const statusSelect = row.cells[2]?.querySelector('select');
+    const monthSelect = row.cells[3]?.querySelector('select');
+    const yearSelect = row.cells[4]?.querySelector('select');
+
+    const statusVal = (statusSelect?.value || '').toLowerCase();
+    // human-friendly label for matching (so "hundred" matches "100%")
+    let statusLabel = statusVal;
+    if (statusVal === 'hundred') statusLabel = '100%';
+    if (statusVal === 'inprogress') statusLabel = 'in progress';
+    if (statusVal === 'notstarted') statusLabel = 'not started';
+    if (statusVal === 'onhold') statusLabel = 'on hold';
+    if (statusVal === 'completed') statusLabel = 'completed';
+
+    const month = (monthSelect?.value || '').toLowerCase();
+    const year = (yearSelect?.value || '').toLowerCase();
+
+    const match =
+      title.includes(query) ||
+      platform.includes(query) ||
+      statusVal.includes(query) ||
+      statusLabel.includes(query) ||
+      month.includes(query) ||
+      year.includes(query);
+
+    row.style.display = match ? '' : 'none';
   });
 });
 
