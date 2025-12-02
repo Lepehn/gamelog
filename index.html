@@ -283,6 +283,25 @@ body.scandi-theme {
   --status-text: var(--hover);
 }
 
+/* Scandi Theme */
+body.discord-theme {
+  /* Core Colors */
+  --background: #121214;
+  --card: #1A1A1E;
+  --card-inlay: #17171B;
+  --button: #212125;
+  --hover: #323235;
+  --border: #222;
+  --radius: 8px;
+
+  /* Text Colors */
+  --text: #fff;
+  --text-muted: #999;
+  
+  /* Status Colors */
+  --status-text: var(--hover);
+}
+
 /* Responsive */
 @media (max-width:900px){
   .grid { grid-template-columns: 1fr; }
@@ -488,9 +507,10 @@ body.scandi-theme {
     <h3>Settings</h3>
 
     <h4>Choose Theme</h4>
-    <button class="theme-btn" data-theme="default">Default Theme</button>
-    <button class="theme-btn" data-theme="alt">Alternate Theme</button>
-    <button class="theme-btn" data-theme="scandi">Scandi Theme</button>
+    <button class="theme-btn" data-theme="default">Woodsmoke</button>
+    <button class="theme-btn" data-theme="alt">Cerulean</button>
+    <button class="theme-btn" data-theme="scandi">Scandi</button>
+    <button class="theme-btn" data-theme="discord-dark">Discord Dark</button>
 
     <button id="closeSettingsModal">Close</button>
   </div>
@@ -935,6 +955,12 @@ document.querySelectorAll(".theme-btn").forEach(btn => {
       document.body.classList.add("scandi-theme");
     } else {
       document.body.classList.remove("scandi-theme");
+    }
+
+    if (theme === "discord-dark") {
+      document.body.classList.add("discord-theme");
+    } else {
+      document.body.classList.remove("discord-theme");
     }
 
     localStorage.setItem("theme", theme);
