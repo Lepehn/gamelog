@@ -762,7 +762,7 @@ function updateUI() {
         </td>
       `;
       tbodyFrag.appendChild(tr);
-
+      
       // count statuses and append to fragments
       switch(g.status) {
         case 'Completed':
@@ -794,6 +794,8 @@ function updateUI() {
   tbody.appendChild(tbodyFrag);
   recentList.appendChild(recentFrag);
   inProgressList.appendChild(inProgressFrag);
+  
+  applyFilters();
 
   // completion bar
   const percent = totalGames ? (completed/totalGames)*100 : 0;
@@ -814,20 +816,6 @@ function updateUI() {
       <li>On Hold: ${onHold}</li>
     `;
   }
-  
-  // If user typed in search, reapply it
-  const query = searchInput.value.toLowerCase();
-  if(query) {
-    Array.from(tbody.querySelectorAll('tr')).forEach(row => {
-      const title = row.cells[0].textContent.toLowerCase();
-      const platform = row.cells[1].textContent.toLowerCase();
-      const status = row.cells[2].querySelector('select').value.toLowerCase();
-      const month = row.cells[3].querySelector('select').value.toLowerCase();
-      const year = row.cells[4].querySelector('select').value.toLowerCase();
-
-      row.style.display = (title.includes(query) || platform.includes(query) || status.includes(query) || month.includes(query) || year.includes(query)) ? '' : 'none';
-    });
-  }
 }
 
 // Update Wishlist
@@ -845,21 +833,12 @@ function updateWishlistUI() {
       </td>
     `;
     tbody.appendChild(tr);
+    applyFiltersWishlist();
   });
-    // If user typed in search, reapply it
-  const query = wishlistSearchInput.value.toLowerCase();
-  if(query) {
-    Array.from(tbody.querySelectorAll('tr')).forEach(row => {
-      const title = row.cells[0].textContent.toLowerCase();
-      row.style.display = title.includes(query) ? '' : 'none';
-    });
-  }
 }
 
-// Search
-const searchInput = document.getElementById('gameSearch');
-
-searchInput.addEventListener('input', () => {
+/* ---------- search -----------*/
+function applyFilters() {
   const query = searchInput.value.toLowerCase();
   const tbody = document.querySelector('#gamesTable tbody');
 
@@ -867,24 +846,23 @@ searchInput.addEventListener('input', () => {
     const title = row.cells[0]?.textContent.toLowerCase() || '';
     const platform = row.cells[1]?.textContent.toLowerCase() || '';
 
-    // safe access to selects (may be missing in some row types)
     const statusSelect = row.cells[2]?.querySelector('select');
     const monthSelect = row.cells[3]?.querySelector('select');
     const yearSelect = row.cells[4]?.querySelector('select');
-
     const statusVal = (statusSelect?.value || '').toLowerCase();
-    // human-friendly label for matching (so "hundred" matches "100%")
+
+    // human-readable aliases
     let statusLabel = statusVal;
-    if (statusVal === 'hundred') statusLabel = '100%';
-    if (statusVal === 'inprogress') statusLabel = 'in progress';
-    if (statusVal === 'notstarted') statusLabel = 'not started';
-    if (statusVal === 'onhold') statusLabel = 'on hold';
-    if (statusVal === 'completed') statusLabel = 'completed';
+    if (statusVal === 'hundred')     statusLabel = '100%';
+    if (statusVal === 'inprogress')  statusLabel = 'in progress';
+    if (statusVal === 'notstarted')  statusLabel = 'not started';
+    if (statusVal === 'onhold')      statusLabel = 'on hold';
 
     const month = (monthSelect?.value || '').toLowerCase();
     const year = (yearSelect?.value || '').toLowerCase();
 
     const match =
+      !query ||
       title.includes(query) ||
       platform.includes(query) ||
       statusVal.includes(query) ||
@@ -894,30 +872,24 @@ searchInput.addEventListener('input', () => {
 
     row.style.display = match ? '' : 'none';
   });
-});
+}
 
-const wishlistSearchInput = document.getElementById('wishlistSearch');
+const searchInput = document.getElementById('gameSearch');
+searchInput.addEventListener('input', applyFilters);
 
-wishlistSearchInput.addEventListener('input', () => {
+function applyFiltersWishlist() {
   const query = wishlistSearchInput.value.toLowerCase();
   const tbody = document.querySelector('#gamesWishlistTable tbody');
 
   Array.from(tbody.querySelectorAll('tr')).forEach(row => {
     const title = row.cells[0]?.textContent.toLowerCase() || '';
-    const platform = row.cells[1]?.textContent.toLowerCase() || '';
-    
-    // Only try to read selects if they exist
-    const status = row.cells[2]?.querySelector('select')?.value.toLowerCase() || '';
-    const month = row.cells[3]?.querySelector('select')?.value.toLowerCase() || '';
-    const year = row.cells[4]?.querySelector('select')?.value.toLowerCase() || '';
-
-    if (title.includes(query) || platform.includes(query) || status.includes(query) || month.includes(query) || year.includes(query)) {
-      row.style.display = '';
-    } else {
-      row.style.display = 'none';
-    }
+    const match = !query || title.includes(query);
+    row.style.display = match ? '' : 'none';
   });
-});
+}
+
+const wishlistSearchInput = document.getElementById('wishlistSearch');
+wishlistSearchInput.addEventListener('input', applyFiltersWishlist);
 
 /* ---------- theme handling -----------*/
 const SettingsModal = document.getElementById("settingsModal");
@@ -1262,3 +1234,4 @@ updateUI();
 </script>
 </body>
 </html>
+
