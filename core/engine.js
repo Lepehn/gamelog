@@ -98,7 +98,7 @@ function updateStats() {
   
   const cardInlay = getComputedStyle(document.documentElement).getPropertyValue('--card-inlay').trim();
   const gridColor = getComputedStyle(document.documentElement).getPropertyValue('--background').trim();
-  const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text').trim();
+  const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim();
   
   Chart.defaults.color = textColor;
   
@@ -607,4 +607,5 @@ exportBtn.addEventListener('click', ()=>{
 });
 
 /* ---------- init ---------- */
+
 updateUI();
