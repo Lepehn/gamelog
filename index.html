@@ -31,39 +31,32 @@
   <!-- Dashboard content -->
   <div id="dashboardContent">
     <h1>Dashboard</h1>
-    <p>Hi <span id="welcomeName">Lepehn</span>, here are your games</p>
-
+    <!-- <p>Hi <span id="welcomeName">Lepehn</span>, here are your games</p> -->
     <div class="grid">
       <div class="card">
         <div class="card-header"><h3><span class="material-symbols-outlined">check</span> Recently Played Games</h3></div>
         <div class="scrollable-list-small" id="recentlyPlayed"></div>
       </div>
-
       <div class="card">
         <div class="card-header"><h3><span class="material-symbols-outlined">progress_activity</span> Games In Progress</h3></div>
         <div class="scrollable-list-small" id="inProgress"></div>
       </div>
-
       <div class="card">
         <div class="card-header"><h3><span class="material-symbols-outlined">list</span> Summary</h3></div>
         <ul id="summary"></ul>
       </div>
-
       <div class="card games">
         <div class="card-header">
           <h3>Games</h3>
           <span class="button-report" id="exportBtn">          
            <span class="material-symbols-outlined">download</span>Export
           </span>
-          
           <span class="button-report" id="importBtn">
            <span class="material-symbols-outlined">upload</span>Import
           </span>
-          
           <span class="button-report" id="openAddGame">
            <span class="material-symbols-outlined">add</span>Add
           </span>
-          
           <input type="file" id="importJSON" accept=".json" style="display:none;">
           <input type="text" id="gameSearch" placeholder="Search games...">
         </div>
@@ -83,7 +76,6 @@
           </table>
         </div>
       </div>
-
       <div class="card" style="max-height:120px">
         <div class="card-header"><h3>Completion Goal</h3></div>
         <div class="completion-goal" id="completionText"></div>
@@ -97,7 +89,7 @@
     <!-- Wishlist content -->
   <div id="wishlistContent" style="display:none;">
     <h1>Wishlist</h1>
-    <p>Hi <span id="welcomeName">Lepehn</span>, here is your wishlist</p>
+    <!-- <p>Hi <span id="welcomeName">Lepehn</span>, here is your wishlist</p> -->
     <div class="grid">
     <div class="card games">
         <div class="card-header">
@@ -123,7 +115,7 @@
   <!-- Stats content -->
   <div id="statsContent" style="display:none;">
     <h1>Game Stats</h1>
-    <p>Hi <span id="welcomeName">Lepehn</span>, here are your gaming stats</p>
+    <!-- <p>Hi <span id="welcomeName">Lepehn</span>, here are your gaming stats</p> -->
     <div class="grid2">
       <div class="card" style="max-height:360px">
         <div class="card-header"><h3>Games by Status</h3></div>
@@ -156,14 +148,12 @@
 <div id="settingsModal" class="modal">
   <div class="modal-content">
     <h3>Settings</h3>
-
     <h4>Theme</h4>
     <button class="theme-btn" data-theme="default">Dark</button>
     <button class="theme-btn" data-theme="light">Light</button>
     <button class="theme-btn" data-theme="oled">OLED</button>
     <button class="theme-btn" data-theme="discord-dark">Discord Dark</button>
     <button class="theme-btn" data-theme="steam">Steam</button>
-
     <button id="closeSettingsModal">Close</button>
   </div>
 </div>
@@ -181,7 +171,6 @@
       <option value="Completed">Completed</option>
       <option value="Hundred">100%</option>
     </select>
-
     <div style="display:flex; gap:8px;">
       <select id="modalGameMonth" class="monthSelect" style="flex:1;">
         <option value="">Month</option>
@@ -190,7 +179,6 @@
         <option value="">Year</option>
       </select>
     </div>
-
     <button id="confirmAddGame">Add Game</button>
     <button id="closeModal">Cancel</button>
   </div>
