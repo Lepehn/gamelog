@@ -8,6 +8,7 @@ const YEAR_END = new Date().getFullYear();
 
 /* ---------- storage ---------- */
 const gameData = JSON.parse(localStorage.getItem('gameData')) || { prefix: 'gameBacklog', epic: [], nintendo: [], playstation: [], steam: [], xbox: [], wishlist: [] };
+gameData.wishlist ||= [];
 function saveGames(){ localStorage.setItem('gameData', JSON.stringify(gameData)); }
 
 /* ---------- helpers ---------- */
@@ -41,7 +42,7 @@ function updateStats() {
   const monthCount = {};
   
   Object.keys(gameData).forEach(platform=>{
-    if(platform==='prefix') return;
+    if(platform === 'prefix' || platform === 'wishlist') return;
     platformCount[platform] = gameData[platform].length || 0;
     gameData[platform].forEach(g=>{
       statusCount[g.status] = (statusCount[g.status]||0)+1;
@@ -70,8 +71,8 @@ function updateStats() {
   const monthValues = MONTHS_SHORT.map(short => {
     let count = 0;
 
-    Object.keys(gameData).forEach(platform => {
-      if(platform === 'prefix') return;
+    Object.keys(gameData).forEach(platform=>{
+      if(platform === 'prefix' || platform === 'wishlist') return;
 
       gameData[platform].forEach(g => {
         if (g.year === currentYear && g.month === short) {
@@ -83,9 +84,8 @@ function updateStats() {
     return count;
   });
   
-  const monthLabels = MONTHS_FULL; // Add this line before creating monthChart
+  const monthLabels = MONTHS_FULL;
 
-  // Destroy previous charts if they exist
   if(statusChart) statusChart.destroy();
   if(platformChart) platformChart.destroy();
   if(yearChart) yearChart.destroy();
@@ -96,38 +96,81 @@ function updateStats() {
   const ctxYear = document.getElementById('yearChart').getContext('2d');
   const ctxMonth = document.getElementById('monthChart').getContext('2d');
   
-  const cardInlay = getComputedStyle(document.documentElement).getPropertyValue('--card-inlay').trim();
-  const gridColor = getComputedStyle(document.documentElement).getPropertyValue('--background').trim();
-  const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim();
+  const cardInlay = getComputedStyle(document.documentElement)
+    .getPropertyValue("--surface-container-low")
+    .trim();
+
+  const textColor = getComputedStyle(document.documentElement)
+    .getPropertyValue('--onsurface-variant')
+    .trim();
+
+  const barColor = getComputedStyle(document.body).getPropertyValue('--primary').trim();
   
   Chart.defaults.color = textColor;
   
-  statusChart = new Chart(ctxStatus, {
-    type:'doughnut',
-    data:{ labels:statusLabels, datasets:[{ data:statusValues, backgroundColor:['#278041','#1177a3','#616161','#a62327', '#689a2e'] }]},
-    options:{ responsive:true, plugins:{ legend:{ position:'right' } } }
-  });
+  const inlayPlugin = {
+    beforeDraw: (chart) => {
+      const ctx = chart.ctx;
+      ctx.save();
+      ctx.fillStyle = cardInlay;
+      ctx.fillRect(0, 0, chart.width, chart.height);
+      ctx.restore();
+    }
+  };
 
-  platformChart = new Chart(ctxPlatform, {
-    type:'doughnut',
-    data:{ labels:platformLabels, datasets:[{ data:platformValues, backgroundColor:['#ff5722','#2196f3','#4caf50','#9c27b0','#00bcd4'] }]},
-    options:{ responsive:true, plugins:{ legend:{ position:'right' } } }
-  });
+statusChart = new Chart(ctxStatus, {
+  type: 'doughnut',
+  data: {
+    labels: statusLabels,
+    datasets: [{ data: statusValues, backgroundColor: ['#278041','#1177a3','#616161','#a62327','#689a2e'] }]
+  },
+  options: { responsive: true, plugins: { legend: { position: 'right' } } },
+  plugins: [inlayPlugin]
+});
 
-  yearChart = new Chart(ctxYear, {
+platformChart = new Chart(ctxPlatform, {
+  type: 'doughnut',
+  data: {
+    labels: platformLabels,
+    datasets: [{ data: platformValues, backgroundColor: ['#ff5722','#2196f3','#4caf50','#9c27b0','#00bcd4'] }]
+  },
+  options: { responsive: true, plugins: { legend: { position: 'right' } } },
+  plugins: [inlayPlugin]
+});
+
+const gridColor = "rgb(255 255 255 / 8%)";
+
+const barOptions = {
+  responsive: true,
+  plugins: { legend: { display: false } },
+  scales: {
+    y: {
+      beginAtZero: true,
+      ticks: {
+        stepSize: 1,
+        precision: 0,
+        callback: value => Number.isInteger(value) ? value : null
+      },
+      grid: { color: gridColor }
+    },
+    x: { grid: { color: gridColor } }
+  }
+};
+
+yearChart = new Chart(ctxYear, {
   type: 'bar',
-  data: { labels: yearLabels, datasets: [{ label: 'Games', data: yearValues, backgroundColor: '#1177a3' }]},
-  options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0, callback: value => Number.isInteger(value) ? value : null }, grid: { color: gridColor }}, x: { grid: { color: gridColor } } } },
-  plugins: [{ beforeDraw: (chart) => { const ctx = chart.ctx; ctx.save(); ctx.fillStyle = cardInlay; ctx.fillRect(0, 0, chart.width, chart.height); ctx.restore(); } } ]
-  });
+  data: { labels: yearLabels, datasets: [{ label: 'Games', data: yearValues, backgroundColor: barColor, borderRadius: 6, maxBarThickness: 64 }] },
+  options: barOptions,
+  plugins: [inlayPlugin]
+});
 
-  monthChart = new Chart(ctxMonth, {
-    type: 'bar',
-    data: { labels: monthLabels, datasets: [{ label: 'Games', data: monthValues, backgroundColor: '#1177a3' }]},
-    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0, callback: value => Number.isInteger(value) ? value : null }, grid: { color: gridColor }}, x: { grid: { color: gridColor } } } },
-    plugins: [{ beforeDraw: (chart) => { const ctx = chart.ctx; ctx.save(); ctx.fillStyle = cardInlay; ctx.fillRect(0, 0, chart.width, chart.height); ctx.restore(); } } ]
-    });
- }
+monthChart = new Chart(ctxMonth, {
+  type: 'bar',
+  data: { labels: monthLabels, datasets: [{ label: 'Games', data: monthValues, backgroundColor: barColor, borderRadius: 6, maxBarThickness: 64 }] },
+  options: barOptions,
+  plugins: [inlayPlugin]
+});
+}
 
 /* ---------- update UI ---------- */
 function updateUI() {
@@ -140,7 +183,6 @@ function updateUI() {
   const completionTextStats = document.getElementById('completionTextStats');
   const completionBarStats = document.getElementById('completionBarStats');
 
-  // clear old content
   tbody.innerHTML = '';
   recentList.innerHTML = '';
   inProgressList.innerHTML = '';
@@ -153,7 +195,6 @@ function updateUI() {
   let onHold = 0;
   let hundred = 0;
 
-  // prebuild month/year options for reuse
   const monthOptionsHTML = makeMonthOptions('');
   const yearOptionsHTML = makeYearOptions('');
 
@@ -170,7 +211,6 @@ function updateUI() {
       const month = g.month || '';
       const year = g.year || '';
 
-      // create table row
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td>${escapeHtml(g.title)}</td>
@@ -201,7 +241,6 @@ function updateUI() {
       `;
       tbodyFrag.appendChild(tr);
       
-      // count statuses and append to fragments
       switch(g.status) {
         case 'Completed':
           completed++;
@@ -228,14 +267,12 @@ function updateUI() {
     });
   });
 
-  // append fragments to DOM in one go
   tbody.appendChild(tbodyFrag);
   recentList.appendChild(recentFrag);
   inProgressList.appendChild(inProgressFrag);
   
   applyFilters();
 
-  // completion bar
   const percent = totalGames ? (completed/totalGames)*100 : 0;
   if(completionBar) completionBar.style.width = percent+'%';
   if(completionText) completionText.textContent = `${completed} / ${totalGames} Completed`;
@@ -243,7 +280,6 @@ function updateUI() {
   if(completionBarStats) completionBarStats.style.width = percent+'%';
   if(completionTextStats) completionTextStats.textContent = `${completed} / ${totalGames} Completed`;
 
-  // summary
   if(summaryBox){
     summaryBox.innerHTML = `
       <li>Total Games: ${totalGames}</li>
@@ -256,7 +292,6 @@ function updateUI() {
   }
 }
 
-// Update Wishlist
 function updateWishlistUI() {
   const tbody = document.querySelector('#gamesWishlistTable tbody');
   tbody.innerHTML = '';
@@ -289,7 +324,6 @@ function applyFilters() {
     const yearSelect = row.cells[4]?.querySelector('select');
     const statusVal = (statusSelect?.value || '').toLowerCase();
 
-    // human-readable aliases
     let statusLabel = statusVal;
     if (statusVal === 'hundred')     statusLabel = '100%';
     if (statusVal === 'inprogress')  statusLabel = 'in progress';
@@ -405,7 +439,6 @@ document.getElementById('gamesTable').addEventListener('click', e => {
   updateUI();
 });
 
-// Delete from wishlist
 document.getElementById('gamesWishlistTable').addEventListener('click', e => {
   const btn = e.target.closest('.button-delete');
   if (!btn) return;
@@ -439,13 +472,11 @@ const profilePreview = document.getElementById('profilePreview');
 const saveProfileBtn = document.getElementById('saveProfile');
 const closeAccountModal = document.getElementById('closeAccountModal');
 
-// Open account modal
 document.querySelector('.navbar .menu a[href="#"]:last-child').addEventListener('click', () => {
   profileNameInput.value = profileNameEl.textContent;
   accountModal.style.display = 'flex';
 });
 
-// Preview new image
 profileImageInput.addEventListener('change', e => {
   const file = e.target.files[0];
   if (!file) return;
@@ -456,7 +487,6 @@ profileImageInput.addEventListener('change', e => {
   reader.readAsDataURL(file);
 });
 
-// Save profile changes
 saveProfileBtn.addEventListener('click', () => {
   const newName = profileNameInput.value.trim() || profileNameEl.textContent;
   const newAvatar = profilePreview.style.backgroundImage || profileAvatarEl.style.backgroundImage;
@@ -469,7 +499,6 @@ saveProfileBtn.addEventListener('click', () => {
   accountModal.style.display = 'none';
 });
 
-// Close modal
 closeAccountModal.addEventListener('click', () => accountModal.style.display = 'none');
 accountModal.addEventListener('click', e => {
   if (e.target === accountModal) accountModal.style.display = 'none';
@@ -543,7 +572,7 @@ if (addingToWishlist) {
   }
 
   modal.style.display = "none";
-  addingToWishlist = false; // reset after adding
+  addingToWishlist = false;
 });
 
 /* ---------- import/export ---------- */
