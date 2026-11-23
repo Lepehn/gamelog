@@ -1,5 +1,6 @@
 :root {
-  --radius: 8px;
+  --radius: 9999px;
+  --radius2: 24px;
   
   /* Fonts */
   --font-main: Arial, sans-serif;
@@ -31,9 +32,23 @@
 body {
   margin: 0;
   margin-bottom: 120px;
-  background: var(--background);
   font-family: var(--font-main);
-  color: var(--text);
+  color: var(--onsurface);
+  background:
+    radial-gradient(1100px 700px at 85% 10%, rgb(136 192 208 / 28%), transparent 70%),
+    radial-gradient(1200px 800px at 10% 30%, rgb(129 161 193 / 26%), transparent 70%),
+    radial-gradient(1000px 800px at 50% 110%, rgb(163 190 140 / 14%), transparent 70%),
+    linear-gradient(180deg, #2e3440 0%, #3b4252 50%, #2b303b 100%);
+  background-attachment: fixed;
+}
+
+h1 {
+  background: var(--surface-container);
+  color: var(--onsurface);
+  border-radius: var(--radius);
+  padding: 1px 12px;
+  backdrop-filter: blur(12px);
+  width: fit-content;
 }
 
 /* Navigation */
@@ -41,20 +56,59 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 40px;
-  border-bottom: 1px solid var(--button);
-  background-color: var(--navbar);
+  padding: 1px 12px;
+  border-radius: var(--radius);
+  background-color: var(--surface);
+  margin-top: 12px;
+  margin-left: 120px;
+  margin-right: 120px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
 }
-.navbar .logo { color: var(--text-active); font-size: var(--font-size-extra-large); font-weight: bold;}
-.navbar .menu { display: flex; gap: 30px; }
+.navbar .logo { 
+  background: var(--surface-container);
+  color: var(--primary); 
+  font-size: var(--font-size-extra-large); 
+  font-weight: bold;
+  padding: 3px 12px;
+  margin: 4px 3px;
+  border-radius: var(--radius);
+}
+.navbar .profile {
+    display: flex;
+    align-items: center;
+    background: var(--surface-container);
+    color: var(--primary);
+    gap: 10px;
+    padding: 3px 12px;
+    margin: 4px 3px;
+    border-radius: var(--radius);
+}
+.navbar .menu { 
+  display: flex; 
+  gap: 30px; 
+  background: var(--surface-container);
+  padding: 3px 12px;
+  margin: 4px 3px;
+  border-radius: var(--radius);
+}
 .navbar .menu a {
-  color: var(--text-muted);
+  color: var(--onsurface);
   text-decoration: none;
   font-size: var(--font-size-medium);
   cursor: pointer;
+  background: var(--surface-container);
+  padding: 3px 12px;
+  margin: 4px 3px;
+  border-radius: var(--radius);
 }
-.navbar .menu a.active { color: var(--text-active); }
-.navbar .profile { display: flex; align-items: center; gap: 10px; color: var(--text-active); }
+.navbar .menu a.active { 
+  background: var(--secondary-container);
+  color: var(--onsecondary-container);
+  padding: 3px 12px;
+  margin: 4px 3px;
+  border-radius: var(--radius);
+}
 
 /* Layout */
 .container {
@@ -79,13 +133,14 @@ body {
 
 /* Cards */
 .card {
-  background: var(--card);
+  background: var(--surface-container);
   padding: 20px;
-  border-radius: var(--radius);
-  box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+  border-radius: var(--radius2);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+  backdrop-filter: blur(12px);
 }
 .card-header {
-  color: var(--text-active);
+  color: var(--primary);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -106,37 +161,52 @@ body {
   width: 100% !important;
   max-height: 250px;
 }
+.card canvas {
+  border-radius: var(--radius2);
+  padding: 3px 12px;
+  margin: 4px 3px;
+}
 
 .games { grid-column: span 2; }
 
 /* Buttons */
 .button-report,
 .button-delete svg {
-  background: var(--button);
-  padding: 6px 12px;
+  background: var(--surface-container);
+  padding: 3px 12px;
+  margin: 4px 3px;
   margin-bottom: 6px;
   border-radius: var(--radius);
   font-size: var(--font-size-small);
   cursor: pointer;
-  color: var(--text);
+  color: var(--onsurface);
   display: inline-flex;
   align-items: center;
   gap: 8px;
 }
 .button-report:hover,
 .button-delete svg:hover {
-  background: var(--hover);
+  background: var(--secondary-container);
 }
 
 /* Table */
 table { width: 100%; border-collapse: collapse; }
 table td, table th {
   padding: 12px 6px;
-  border-bottom: 1px solid var(--card-inlay);
   font-size: var(--font-size-small);
 }
-table th { color: var(--text-muted); text-align: left; }
-
+table th { color: var(--onsurface-variant); text-align: left; }
+thead tr,
+tbody tr {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+  align-items: center;
+  background: var(--surface-container);
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+  padding: 3px 12px;
+  margin: 4px 3px;
+}
 /* Lists */
 ul { padding-left: 20px; }
 ul li { margin-bottom: 8px; font-size: var(--font-size-medium); }
@@ -147,23 +217,22 @@ ul li { margin-bottom: 8px; font-size: var(--font-size-medium); }
   margin-top: 12px;
   overflow-y: auto;
   padding-right: 8px;
-  scrollbar-color: var(--hover) var(--card-inlay);
+  scrollbar-color: var(--surface-container-low) var(--surface-container-high);
 }
 .scrollable-list-small { max-height: 160px; }
 .scrollable-list-large { max-height: 400px; }
-
-#gameSearch, #wishlistSearch { padding:6px; width:300px; border-radius: var(--radius); border:1px solid var(--border); background: var(--card-inlay); color: var(--text); font-size:var(--font-size-small); }
+#gameSearch, #wishlistSearch { padding:6px; width:300px; border-radius: var(--radius); border:1px solid var(--border); background: var(--surface-container-low); color: var(--onsurface); font-size:var(--font-size-small); }
 
 /* Selects */
 .statusSelect,
 .monthSelect,
 .yearSelect {
-  padding: 6px 12px;
+  padding: 1px 12px;
   border-radius: var(--radius);
-  border: var(--button);
+  border: 0;
   font-size: var(--font-size-small);
-  background: var(--button);
-  color: var(--text-muted);
+  background: var(--surface-container-low);
+  color: var(--onsurface-variant);
 }
 
 .statusSelect {
@@ -179,7 +248,7 @@ ul li { margin-bottom: 8px; font-size: var(--font-size-medium); }
 
 /* Progress Bar */
 .progress-bar {
-  background: var(--card-inlay);
+  background: var(--surface-container-low);
   width: 100%;
   height: 8px;
   border-radius: 4px;
@@ -187,7 +256,7 @@ ul li { margin-bottom: 8px; font-size: var(--font-size-medium); }
   margin-top: 10px;
 }
 .progress-bar-fill {
-  background: var(--progressbar);
+  background: var(--primary);
   height: 100%;
   width: 0%;
   transition: width 0.4s ease;
@@ -201,42 +270,54 @@ ul li { margin-bottom: 8px; font-size: var(--font-size-medium); }
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.5);
+  background: var(--surface-container-low);
   justify-content: center;
   align-items: center;
   z-index: 40;
+  backdrop-filter: blur(12px);
 }
 .modal-content {
-  background: var(--card);
+  background: var(--surface-container);
   padding: 20px;
-  border-radius: var(--radius);
+  border-radius: var(--radius2);
   width: 320px;
   max-width: 95%;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
 }
 .modal-content input {
   padding: 8px;
   border-radius: var(--radius);
   border: none;
   font-size: var(--font-size-small);
-  background: var(--card-inlay);
-  color: var(--text);
+  background: var(--surface-container);
+  color: var(--onsurface);
 }
 .modal-content select,
 .modal-content button {
-  padding: 8px;
+  padding: 3px 12px;
+  margin: 4px 3px;
   border-radius: var(--radius);
   border: none;
   font-size: var(--font-size-small);
-  background: var(--button);
-  color: var(--text-muted);
+  background: var(--surface-container-high);
+  color: var(--onsurface);
 }
 #closeModal,
-#closeAccountModal { background: var(--button); }
-#confirmAddGame { background: var(--button); }
-#saveProfile { background: var(--button); }
+#closeSettingsModal,
+#closeAccountModal { background: var(--surface-container-high); }
+#confirmAddGame { background: var(--surface-container-high); }
+#saveProfile { background: var(--surface-container-high); }
+
+#closeModal:hover,
+#closeSettingsModal:hover,
+#closeAccountModal:hover { background: var(--secondary-container); }
+#confirmAddGame:hover { background: var(--secondary-container); }
+#saveProfile:hover { background: var(--secondary-container); }
+
 
 /* Responsive */
 @media (max-width:900px){
@@ -269,19 +350,25 @@ ul li { margin-bottom: 8px; font-size: var(--font-size-medium); }
 }
 
 .button-delete .material-symbols-outlined {
-  background: var(--button);
+  background: var(--surface-container);
   padding: 6px 12px;
   border-radius: var(--radius);
   font-size: var(--font-size-extra-large);
   cursor: pointer;
-  color: var(--text);
+  color: var(--onsurface);
   display: inline-flex;
   align-items: center;
   gap: 8px;
 }
 
 .button-delete .material-symbols-outlined:hover {
-  background: var(--hover);
+  background: var(--secondary-container);
+  color: var(--onsecondary-container);
+}
+
+.theme-btn:hover {
+  background: var(--secondary-container);
+  color: var(--onsecondary-container);
 }
 
 .menu .material-symbols-outlined {
@@ -290,4 +377,4 @@ ul li { margin-bottom: 8px; font-size: var(--font-size-medium); }
   line-height: 0;
 }
 
-footer {color: var(--text-muted); text-align: center; margin-top: 240px;}
+footer {color: var(--onsurface); text-align: center; margin-top: 240px;}
